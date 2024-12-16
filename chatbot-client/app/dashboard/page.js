@@ -8,4 +8,4 @@ function Dashboard() {
   )
 }
 
-export default page
+export default Dashboard
