@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 function AboutSection() {
   return (
     <>
-    <div className="bg-gradient-to-br from-[#1F509A] via-[#1F509A] to-blue-200 min-h-screen mt-2">
+    <div className="bg-gradient-to-br from-primeColor via-thirdColor to-secondColor min-h-screen mt-2">
     <div className="container mx-auto px-14 py-16 lg:py-24">
       <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
         <div className="lg:w-1/2 text-white" >
@@ -15,7 +15,7 @@ function AboutSection() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <button
-              className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300"
+              className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-primeColor transition-all duration-300"
               aria-label="Learn More"
             >
               Learn More
@@ -26,7 +26,7 @@ function AboutSection() {
           <div className="bg-white rounded-2xl p-6 shadow-2xl lg:w-1/2">
             <div className="bg-gray-100 rounded-xl p-4 mb-4">
               <div className="flex items-center gap-3 mb-4">
-                <FaRobot className="text-3xl text-[#1F509A]" />
+                <FaRobot className="text-3xl text-primeColor" />
                 <h3 className="text-xl font-semibold text-gray-800">Task Assistant</h3>
               </div>
               <div className="space-y-4">
@@ -36,8 +36,8 @@ function AboutSection() {
                 <div className="bg-gray-200 text-gray-800 p-3 rounded-lg rounded-tr-none max-w-xs ml-auto">
                   I need to set a reminder for my meeting tomorrow
                 </div>
-                <div className="bg-[#1F509A] text-white p-3 rounded-lg rounded-tl-none max-w-xs">
-                  I'll set that up for you right away. What time is your meeting?
+                <div className="bg-primeColor text-white p-3 rounded-lg rounded-tl-none max-w-xs">
+                  I&apos;ll set that up for you right away. What time is your meeting?
                 </div>
               </div>
             </div>
@@ -45,11 +45,11 @@ function AboutSection() {
               <input
                 type="text"
                 placeholder="Type your message..."
-                className="w-full p-4 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:border-blue-600"
+                className="w-full p-4 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:border-primeColor"
                 aria-label="Message input"
               />
               <button
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-blue-600 hover:text-blue-700"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-thirdColor hover:text-primeColor"
                 aria-label="Send message"
               >
                 <FaArrowRight className="text-xl" />
