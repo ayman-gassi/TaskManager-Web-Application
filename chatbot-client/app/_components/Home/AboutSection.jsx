@@ -3,175 +3,132 @@ import { motion } from "framer-motion";
 function AboutSection() {
   return (
     <>
+    {/* Section 1 */}
     <div className="bg-gradient-to-br from-primeColor via-thirdColor to-secondColor min-h-screen mt-2">
-    <div className="container mx-auto px-14 py-16 lg:py-24">
-      <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-        <div className="lg:w-1/2 text-white" >
-          <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-            Manage Your Tasks Effortlessly with Chatbot Assistant!
-          </h1>
-          <p className="text-lg lg:text-xl mb-8 text-gray-100">
-            Get instant help, set reminders, and manage your tasks seamlessly with our AI-powered chatbot. Boost your productivity and never miss a deadline again.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4">
-            <button
-              className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-primeColor transition-all duration-300"
-              aria-label="Learn More"
-            >
-              Learn More
-            </button>
-          </div>
-          </div>
+        <div className="container mx-auto px-14 py-16 lg:py-24">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+            <div className="lg:w-1/2 text-white" >
+              <h1 className="text-4xl lg:text-6xl font-bold mb-6">
+                Manage Your Tasks Effortlessly with Chatbot Assistant!
+              </h1>
+              <p className="text-lg lg:text-xl mb-8 text-gray-100">
+                Get instant help, set reminders, and manage your tasks seamlessly with our AI-powered chatbot. Boost your productivity and never miss a deadline again.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-primeColor transition-all duration-300"
+                  aria-label="Learn More"
+                >
+                  Learn More
+                </button>
+              </div>
+              </div>
 
-          <div className="bg-white rounded-2xl p-6 shadow-2xl lg:w-1/2">
-            <div className="bg-gray-100 rounded-xl p-4 mb-4">
-              <div className="flex items-center gap-3 mb-4">
-                <FaRobot className="text-3xl text-primeColor" />
-                <h3 className="text-xl font-semibold text-gray-800">Task Assistant</h3>
-              </div>
-              <div className="space-y-4">
-                <div className="bg-[#1F509A] text-white p-3 rounded-lg rounded-tl-none max-w-xs">
-                  How can I help you manage your tasks today?
+              <div className="bg-white rounded-2xl p-6 shadow-2xl lg:w-1/2">
+                <div className="bg-gray-100 rounded-xl p-4 mb-4">
+                  <div className="flex items-center gap-3 mb-4">
+                    <FaRobot className="text-3xl text-primeColor" />
+                    <h3 className="text-xl font-semibold text-gray-800">Task Assistant</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="bg-[#1F509A] text-white p-3 rounded-lg rounded-tl-none max-w-xs">
+                      How can I help you manage your tasks today?
+                    </div>
+                    <div className="bg-gray-200 text-gray-800 p-3 rounded-lg rounded-tr-none max-w-xs ml-auto">
+                      I need to set a reminder for my meeting tomorrow
+                    </div>
+                    <div className="bg-primeColor text-white p-3 rounded-lg rounded-tl-none max-w-xs">
+                      I&apos;ll set that up for you right away. What time is your meeting?
+                    </div>
+                  </div>
                 </div>
-                <div className="bg-gray-200 text-gray-800 p-3 rounded-lg rounded-tr-none max-w-xs ml-auto">
-                  I need to set a reminder for my meeting tomorrow
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Type your message..."
+                    className="w-full p-4 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:border-primeColor"
+                    aria-label="Message input"
+                  />
+                  <button
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-thirdColor hover:text-primeColor"
+                    aria-label="Send message"
+                  >
+                    <FaArrowRight className="text-xl" />
+                  </button>
                 </div>
-                <div className="bg-primeColor text-white p-3 rounded-lg rounded-tl-none max-w-xs">
-                  I&apos;ll set that up for you right away. What time is your meeting?
-                </div>
               </div>
-            </div>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Type your message..."
-                className="w-full p-4 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:border-primeColor"
-                aria-label="Message input"
-              />
-              <button
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-thirdColor hover:text-primeColor"
-                aria-label="Send message"
-              >
-                <FaArrowRight className="text-xl" />
-              </button>
-            </div>
-          </div>
-      </div>
-    </div>
-     </div>
-     <div className="dark:bg-gray-900">
-      <section className="mx-auto container py-20 ">
-        <div className="flex justify-center items-center flex-col">
-          <div className="lg:text-6xl md:text-5xl text-4xl font-bold leading-10 text-center text-gray-800 dark:text-white">
-            <h1>Tailor-made features</h1>
-          </div>
-          <div className="pt-24 grid lg:grid-cols-3 md:grid-cols-2 justify-center items-center xl:gap-y-16 gap-y-20 gap-x-16 lg:gap-x-20 xl:gap-x-0 lg:px-10 xl:px-0">
-            <div className="cursor-pointer hover:shadow py-6 xl:px-4 rounded xl:w-96 w-60 flex justify-center items-center flex-col">
-              <div className="mb-6">
-                <svg className="-[#1F509A]" width={32} height={32} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M24 13.3333H32L28 8L24 13.3333ZM24 18.6667H32L28 24L24 18.6667Z" fill="#1F509A" />
-                  <path d="M1.33333 0H9.33333V32H1.33333C0.979711 32 0.640572 31.8595 0.390523 31.6095C0.140475 31.3594 0 31.0203 0 30.6667V1.33333C0 0.979711 0.140475 0.640572 0.390523 0.390523C0.640572 0.140475 0.979711 0 1.33333 0Z" fill="#818CF8" />
-                  <path d="M12 0H20C20.3536 0 20.6928 0.140475 20.9428 0.390523C21.1929 0.640572 21.3333 0.979711 21.3333 1.33333V30.6667C21.3333 31.0203 21.1929 31.3594 20.9428 31.6095C20.6928 31.8595 20.3536 32 20 32H12V0Z" fill="#6366F1" />
-                </svg>
-              </div>
-              <div className="text-gray-800 dark:text-white text-2xl font-semibold text-center">
-                <h2>Robust workflow</h2>
-              </div>
-              <div className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center ">
-                <p>Workflows can help streamline and automate repeatable business tasks.</p>
-              </div>
-            </div>
-            <div className="cursor-pointer hover:shadow py-6 xl:px-4 rounded xl:w-96 w-60 flex justify-center items-center flex-col">
-              <div className="mb-6">
-                <svg width={32} height={32} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M5.33325 1.33337H30.6666L26.6666 9.33337H1.33325L5.33325 1.33337Z" fill="#818CF8" />
-                  <path d="M5.33325 12H30.6666L26.6666 20H1.33325L5.33325 12Z" fill="#6366F1" />
-                  <path d="M5.33325 22.6667H30.6666L26.6666 30.6667H1.33325L5.33325 22.6667Z" fill="#C7D2FE" />
-                </svg>
-              </div>
-              <div className="text-gray-800 dark:text-white text-2xl font-semibold text-center">
-                <h2>Flexibility</h2>
-              </div>
-              <div className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center">
-                <p>A flexible software architecture is able to changes in usability requirements</p>
-              </div>
-            </div>
-            <div className="cursor-pointer hover:shadow py-6 xl:px-4 rounded xl:w-96 w-60 flex justify-center items-center flex-col">
-              <div className="mb-6">
-                <svg width={32} height={32} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M30.6667 8.00004V2.66671C30.6667 2.31309 30.5262 1.97395 30.2762 1.7239C30.0261 1.47385 29.687 1.33337 29.3334 1.33337H2.66671C2.31309 1.33337 1.97395 1.47385 1.7239 1.7239C1.47385 1.97395 1.33337 2.31309 1.33337 2.66671V8.00004H30.6667Z" fill="#6366F1" />
-                  <path d="M1.33337 10.6667V29.3334C1.33337 29.687 1.47385 30.0262 1.7239 30.2762C1.97395 30.5263 2.31309 30.6667 2.66671 30.6667H9.33337V10.6667H1.33337Z" fill="#C7D2FE" />
-                  <path d="M12 30.6667H29.3333C29.687 30.6667 30.0261 30.5263 30.2761 30.2762C30.5262 30.0262 30.6667 29.687 30.6667 29.3334V10.6667H12V30.6667Z" fill="#818CF8" />
-                </svg>
-              </div>
-              <div className="text-gray-800 dark:text-white text-2xl font-semibold text-center">
-                <h2>User friendly</h2>
-              </div>
-              <div className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center">
-                <p>Good usability can improve a new software chances of successful adoption.</p>
-              </div>
-            </div>
-            <div className="cursor-pointer hover:shadow py-6 xl:px-4 rounded xl:w-96 w-60 flex justify-center items-center flex-col">
-              <div className="mb-6">
-                <svg width={32} height={32} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M28.0001 32H16.0001C15.6465 32 15.3073 31.8595 15.0573 31.6095C14.8072 31.3594 14.6667 31.0203 14.6667 30.6667V28C14.6667 27.6464 14.8072 27.3073 15.0573 27.0572C15.3073 26.8072 15.6465 26.6667 16.0001 26.6667H28.0001C28.3537 26.6667 28.6928 26.8072 28.9429 27.0572C29.1929 27.3073 29.3334 27.6464 29.3334 28V30.6667C29.3334 31.0203 29.1929 31.3594 28.9429 31.6095C28.6928 31.8595 28.3537 32 28.0001 32Z" fill="#C7D2FE" />
-                  <path d="M28.0001 0H4.00008C3.64646 0 3.30732 0.140475 3.05727 0.390523C2.80722 0.640572 2.66675 0.979711 2.66675 1.33333V4C2.66675 4.35362 2.80722 4.69276 3.05727 4.94281C3.30732 5.19286 3.64646 5.33333 4.00008 5.33333H28.0001C28.3537 5.33333 28.6928 5.19286 28.9429 4.94281C29.1929 4.69276 29.3334 4.35362 29.3334 4V1.33333C29.3334 0.979711 29.1929 0.640572 28.9429 0.390523C28.6928 0.140475 28.3537 0 28.0001 0Z" fill="#6366F1" />
-                  <path d="M28.0001 8H4.00008C3.64646 8 3.30732 8.14047 3.05727 8.39052C2.80722 8.64057 2.66675 8.97971 2.66675 9.33333V22.6667C2.66675 23.0203 2.80722 23.3594 3.05727 23.6095C3.30732 23.8595 3.64646 24 4.00008 24H28.0001C28.3537 24 28.6928 23.8595 28.9429 23.6095C29.1929 23.3594 29.3334 23.0203 29.3334 22.6667V9.33333C29.3334 8.97971 29.1929 8.64057 28.9429 8.39052C28.6928 8.14047 28.3537 8 28.0001 8Z" fill="#818CF8" />
-                </svg>
-              </div>
-              <div className="text-gray-800 dark:text-white text-2xl font-semibold text-center">
-                <h2>Multiple layouts</h2>
-              </div>
-              <div className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center">
-                <p>Smaller components are easier to maintain. Program can be divided</p>
-              </div>
-            </div>
-            <div className="cursor-pointer hover:shadow py-6 xl:px-4 rounded xl:w-96 w-60 flex justify-center items-center flex-col">
-              <div className="mb-6">
-                <svg width={32} height={32} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6.66658 1.33331H2.66659C2.31296 1.33331 1.97382 1.47379 1.72378 1.72384C1.47373 1.97388 1.33325 2.31302 1.33325 2.66665V29.3333C1.33325 29.6869 1.47373 30.0261 1.72378 30.2761C1.97382 30.5262 2.31296 30.6666 2.66659 30.6666H6.66658V1.33331Z" fill="#C7D2FE" />
-                  <path
-                    d="M9.33325 30.6666H22.6666V1.33331H9.33325V30.6666ZM15.9999 25.3333C15.6463 25.3333 15.3072 25.1928 15.0571 24.9428C14.8071 24.6927 14.6666 24.3536 14.6666 24C14.6666 23.6464 14.8071 23.3072 15.0571 23.0572C15.3072 22.8071 15.6463 22.6666 15.9999 22.6666C16.3535 22.6666 16.6927 22.8071 16.9427 23.0572C17.1928 23.3072 17.3333 23.6464 17.3333 24C17.3333 24.3536 17.1928 24.6927 16.9427 24.9428C16.6927 25.1928 16.3535 25.3333 15.9999 25.3333ZM15.9999 6.66665C16.3535 6.66665 16.6927 6.80712 16.9427 7.05717C17.1928 7.30722 17.3333 7.64636 17.3333 7.99998C17.3333 8.3536 17.1928 8.69274 16.9427 8.94279C16.6927 9.19284 16.3535 9.33331 15.9999 9.33331C15.6463 9.33331 15.3072 9.19284 15.0571 8.94279C14.8071 8.69274 14.6666 8.3536 14.6666 7.99998C14.6666 7.64636 14.8071 7.30722 15.0571 7.05717C15.3072 6.80712 15.6463 6.66665 15.9999 6.66665ZM15.9999 14.6666C16.3535 14.6666 16.6927 14.8071 16.9427 15.0572C17.1928 15.3072 17.3333 15.6464 17.3333 16C17.3333 16.3536 17.1928 16.6927 16.9427 16.9428C16.6927 17.1928 16.3535 17.3333 15.9999 17.3333C15.6463 17.3333 15.3072 17.1928 15.0571 16.9428C14.8071 16.6927 14.6666 16.3536 14.6666 16C14.6666 15.6464 14.8071 15.3072 15.0571 15.0572C15.3072 14.8071 15.6463 14.6666 15.9999 14.6666Z"
-                    fill="#818CF8"
-                  />
-                  <path d="M29.3333 1.33331H25.3333V30.6666H29.3333C29.6869 30.6666 30.026 30.5262 30.2761 30.2761C30.5261 30.0261 30.6666 29.6869 30.6666 29.3333V2.66665C30.6666 2.31302 30.5261 1.97388 30.2761 1.72384C30.026 1.47379 29.6869 1.33331 29.3333 1.33331Z" fill="#6366F1" />
-                </svg>
-              </div>
-              <div className="text-gray-800 dark:text-white text-2xl font-semibold text-center">
-                <h2>Better components</h2>
-              </div>
-              <div className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center">
-                <p>Component-based design makes front-end web development faster.</p>
-              </div>
-            </div>
-            <div className="cursor-pointer hover:shadow py-6 xl:px-4 rounded xl:w-96 w-60 flex justify-center items-center flex-col">
-              <div className="mb-6">
-                <svg width={32} height={32} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M15.2079 0.175992L0.781281 6.91599C0.68372 6.96073 0.601072 7.03256 0.543175 7.12294C0.485278 7.21331 0.454572 7.31842 0.454712 7.42575C0.454853 7.53308 0.485833 7.63811 0.543966 7.72833C0.6021 7.81856 0.684936 7.89017 0.782614 7.93466L15.3226 14.6253C15.7519 14.8227 16.2479 14.8227 16.6773 14.6253L31.2173 7.93466C31.315 7.8903 31.3979 7.81879 31.4562 7.72865C31.5145 7.6385 31.5456 7.53351 31.5459 7.42618C31.5461 7.31885 31.5156 7.2137 31.4578 7.12325C31.4 7.0328 31.3175 6.96086 31.2199 6.91599L16.792 0.175992C16.544 0.0601174 16.2736 6.10352e-05 15.9999 6.10352e-05C15.7263 6.10352e-05 15.4559 0.0601174 15.2079 0.175992Z"
-                    fill="#818CF8"
-                  />
-                  <path
-                    d="M31.22 15.568L28.24 14.176C28.0266 14.0763 27.794 14.0243 27.5584 14.0236C27.3229 14.0229 27.09 14.0735 26.876 14.172L16.6773 18.8653C16.4649 18.963 16.2338 19.0136 16 19.0136C15.7662 19.0136 15.5351 18.963 15.3227 18.8653L5.12267 14.172C4.90885 14.0737 4.67621 14.0232 4.4409 14.0239C4.20559 14.0246 3.97324 14.0765 3.76001 14.176L0.780006 15.568C0.682503 15.6128 0.599949 15.6848 0.54217 15.7752C0.48439 15.8657 0.453823 15.9708 0.454103 16.0782C0.454384 16.1855 0.485502 16.2905 0.543754 16.3806C0.602006 16.4708 0.684937 16.5423 0.782674 16.5866L15.3227 23.276C15.535 23.3742 15.7661 23.4251 16 23.4251C16.2339 23.4251 16.465 23.3742 16.6773 23.276L31.2173 16.5866C31.3151 16.5423 31.398 16.4708 31.4563 16.3806C31.5145 16.2905 31.5456 16.1855 31.5459 16.0782C31.5462 15.9708 31.5156 15.8657 31.4578 15.7752C31.4001 15.6848 31.3175 15.6128 31.22 15.568Z"
-                    fill="#C7D2FE"
-                  />
-                  <path
-                    d="M31.22 24.144L28.24 22.752C28.0266 22.6522 27.794 22.6002 27.5585 22.5995C27.3229 22.5989 27.09 22.6495 26.876 22.748L16.6774 27.44C16.4649 27.5376 16.2338 27.5882 16 27.5882C15.7662 27.5882 15.5351 27.5376 15.3227 27.44L5.12269 22.7466C4.90887 22.6484 4.67623 22.5978 4.44091 22.5985C4.2056 22.5992 3.97326 22.6511 3.76002 22.7506L0.780019 24.144C0.682891 24.189 0.600708 24.2609 0.543205 24.3512C0.485701 24.4415 0.455288 24.5464 0.455568 24.6535C0.455849 24.7605 0.486813 24.8653 0.544789 24.9553C0.602765 25.0453 0.685324 25.1168 0.782686 25.1613L15.3227 31.852C15.752 32.0493 16.248 32.0493 16.6774 31.852L31.2174 25.1613C31.3147 25.1168 31.3973 25.0453 31.4553 24.9553C31.5132 24.8653 31.5442 24.7605 31.5445 24.6535C31.5448 24.5464 31.5143 24.4415 31.4568 24.3512C31.3993 24.2609 31.3172 24.189 31.22 24.144Z"
-                    fill="#6366F1"
-                  />
-                </svg>
-              </div>
-              <div className="text-gray-800 dark:text-white text-2xl font-semibold text-center">
-                <h2>Well organised</h2>
-              </div>
-              <div className="text-gray-600 dark:text-gray-300 mt-2 text-lg text-center">
-                <p>No more running around looking for things.When you write things and plan.</p>
-              </div>
-            </div>
           </div>
         </div>
-      </section>
     </div>
+    {/* End Section 1 */}
+
+    {/* Section 2 */}
+    <div className="bg-white font-[sans-serif] flex max-lg:flex-col px-4 my-14 gap-12 max-w-[1400px] mx-auto">
+      <div>
+        <h2 className="text-gray-800 text-4xl font-extrabold mb-6">Discover Our Exclusive Features</h2>
+        <p className="text-gray-600 text-sm leading-relaxed">Laboris qui Lorem ad tempor ut reprehenderit. Nostrud anim nulla officia ea sit deserunt. Eu eu quis anim aute Laboris qui Lorem ad tempor ut reprehenderit. Eu eu quis anim aute.</p>
+      </div>
+
+      <div className="grid md:grid-cols-2 gap-8 max-md:max-w-lg mx-auto">
+        <div className="text-left bg-fourthColor  rounded-lg shadow p-6">
+          <svg xmlns="http://www.w3.org/2000/svg" className="fill-primeColor w-12 inline-block bg-white p-3 rounded-full" viewBox="0 0 32 32">
+            <path d="M28.068 12h-.128a.934.934 0 0 1-.864-.6.924.924 0 0 1 .2-1.01l.091-.091a2.938 2.938 0 0 0 0-4.147l-1.511-1.51a2.935 2.935 0 0 0-4.146 0l-.091.091A.956.956 0 0 1 20 4.061v-.129A2.935 2.935 0 0 0 17.068 1h-2.136A2.935 2.935 0 0 0 12 3.932v.129a.956.956 0 0 1-1.614.668l-.086-.091a2.935 2.935 0 0 0-4.146 0l-1.516 1.51a2.938 2.938 0 0 0 0 4.147l.091.091a.935.935 0 0 1 .185 1.035.924.924 0 0 1-.854.579h-.128A2.935 2.935 0 0 0 1 14.932v2.136A2.935 2.935 0 0 0 3.932 20h.128a.934.934 0 0 1 .864.6.924.924 0 0 1-.2 1.01l-.091.091a2.938 2.938 0 0 0 0 4.147l1.51 1.509a2.934 2.934 0 0 0 4.147 0l.091-.091a.936.936 0 0 1 1.035-.185.922.922 0 0 1 .579.853v.129A2.935 2.935 0 0 0 14.932 31h2.136A2.935 2.935 0 0 0 20 28.068v-.129a.956.956 0 0 1 1.614-.668l.091.091a2.935 2.935 0 0 0 4.146 0l1.511-1.509a2.938 2.938 0 0 0 0-4.147l-.091-.091a.935.935 0 0 1-.185-1.035.924.924 0 0 1 .854-.58h.128A2.935 2.935 0 0 0 31 17.068v-2.136A2.935 2.935 0 0 0 28.068 12ZM29 17.068a.933.933 0 0 1-.932.932h-.128a2.956 2.956 0 0 0-2.083 5.028l.09.091a.934.934 0 0 1 0 1.319l-1.511 1.509a.932.932 0 0 1-1.318 0l-.09-.091A2.957 2.957 0 0 0 18 27.939v.129a.933.933 0 0 1-.932.932h-2.136a.933.933 0 0 1-.932-.932v-.129a2.951 2.951 0 0 0-5.028-2.082l-.091.091a.934.934 0 0 1-1.318 0l-1.51-1.509a.934.934 0 0 1 0-1.319l.091-.091A2.956 2.956 0 0 0 4.06 18h-.128A.933.933 0 0 1 3 17.068v-2.136A.933.933 0 0 1 3.932 14h.128a2.956 2.956 0 0 0 2.083-5.028l-.09-.091a.933.933 0 0 1 0-1.318l1.51-1.511a.932.932 0 0 1 1.318 0l.09.091A2.957 2.957 0 0 0 14 4.061v-.129A.933.933 0 0 1 14.932 3h2.136a.933.933 0 0 1 .932.932v.129a2.956 2.956 0 0 0 5.028 2.082l.091-.091a.932.932 0 0 1 1.318 0l1.51 1.511a.933.933 0 0 1 0 1.318l-.091.091A2.956 2.956 0 0 0 27.94 14h.128a.933.933 0 0 1 .932.932Z" data-original="#000000" />
+            <path d="M16 9a7 7 0 1 0 7 7 7.008 7.008 0 0 0-7-7Zm0 12a5 5 0 1 1 5-5 5.006 5.006 0 0 1-5 5Z" data-original="#000000" />
+          </svg>
+          <h3 className="text-gray-800 text-xl font-semibold mt-6 mb-3">Customization</h3>
+          <p className="text-gray-600 text-sm leading-relaxed">Laboris qui Lorem ad tempor ut reprehenderit. Nostrud anim nulla officia ea sit deserunt. Eu eu quis anim aute Laboris qui Lorem ad tempor ut reprehenderit.</p>
+          <button type="button" className="text-gray-800 border border-gray-300 px-4 py-2 rounded-lg font-bold flex items-center text-sm mt-6 hover:bg-white">
+            Learn more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" className="rotate-90 ml-1.5"><path fill="#333" d="M12.006 1a1 1 0 0 1 .838.463l7 11a1 1 0 0 1-.985 1.527l-3.364-.48a.434.434 0 0 0-.495.43V20c0 1.645-1.355 3-3 3s-3-1.355-3-3v-6.06a.434.434 0 0 0-.495-.43l-3.364.48a1 1 0 0 1-.985-1.527l7-11a1 1 0 0 1 .85-.463z" data-original="#000000" paintOrder="fill markers stroke"></path></svg>
+          </button>
+        </div>
+
+        <div className="text-left bg-fourthColor rounded-lg shadow p-6">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-12 inline-block bg-white p-3 rounded-full" viewBox="0 0 682.667 682.667">
+            <defs>
+              <clipPath id="a" clipPathUnits="userSpaceOnUse">
+                <path d="M0 512h512V0H0Z" data-original="#000000" />
+              </clipPath>
+            </defs>
+            <g fill="none" className="stroke-blue-600" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="40" clip-path="url(#a)" transform="matrix(1.33 0 0 -1.33 0 682.667)">
+              <path d="M256 492 60 410.623v-98.925C60 183.674 137.469 68.38 256 20c118.53 48.38 196 163.674 196 291.698v98.925z" data-original="#000000" />
+              <path d="M178 271.894 233.894 216 334 316.105" data-original="#000000" />
+            </g>
+          </svg>
+          <h3 className="text-gray-800 text-xl font-semibold mt-6 mb-3">Security</h3>
+          <p className="text-gray-600 text-sm leading-relaxed">Laboris qui Lorem ad tempor ut reprehenderit. Nostrud anim nulla officia ea sit deserunt. Eu eu quis anim aute Laboris qui Lorem ad tempor ut reprehenderit.</p>
+          <button type="button" className="text-gray-800 border border-gray-300 px-4 py-2 rounded-lg font-bold flex items-center text-sm mt-6 hover:bg-white">
+            Learn more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" className="rotate-90 ml-1.5"><path fill="#333" d="M12.006 1a1 1 0 0 1 .838.463l7 11a1 1 0 0 1-.985 1.527l-3.364-.48a.434.434 0 0 0-.495.43V20c0 1.645-1.355 3-3 3s-3-1.355-3-3v-6.06a.434.434 0 0 0-.495-.43l-3.364.48a1 1 0 0 1-.985-1.527l7-11a1 1 0 0 1 .85-.463z" data-original="#000000" paintOrder="fill markers stroke"></path></svg>
+          </button>
+        </div>
+
+        <div className="text-left bg-fourthColor rounded-lg shadow p-6">
+          <svg xmlns="http://www.w3.org/2000/svg" className="fill-blue-600 w-12 inline-block bg-white p-3 rounded-full" viewBox="0 0 512.001 512.001">
+            <path d="M271.029 0c-33.091 0-61 27.909-61 61s27.909 61 61 61 60-27.909 60-61-26.909-61-60-61zm66.592 122c-16.485 18.279-40.096 30-66.592 30-26.496 0-51.107-11.721-67.592-30-14.392 15.959-23.408 36.866-23.408 60v15c0 8.291 6.709 15 15 15h151c8.291 0 15-6.709 15-15v-15c0-23.134-9.016-44.041-23.408-60zM144.946 460.404 68.505 307.149c-7.381-14.799-25.345-20.834-40.162-13.493l-19.979 9.897c-7.439 3.689-10.466 12.73-6.753 20.156l90 180c3.701 7.423 12.704 10.377 20.083 6.738l19.722-9.771c14.875-7.368 20.938-25.417 13.53-40.272zM499.73 247.7c-12.301-9-29.401-7.2-39.6 3.9l-82 100.8c-5.7 6-16.5 9.6-22.2 9.6h-69.901c-8.401 0-15-6.599-15-15s6.599-15 15-15h60c16.5 0 30-13.5 30-30s-13.5-30-30-30h-78.6c-7.476 0-11.204-4.741-17.1-9.901-23.209-20.885-57.949-30.947-93.119-22.795-19.528 4.526-32.697 12.415-46.053 22.993l-.445-.361-21.696 19.094L174.28 452h171.749c28.2 0 55.201-13.5 72.001-36l87.999-126c9.9-13.201 7.2-32.399-6.299-42.3z" data-original="#000000" />
+          </svg>
+          <h3 className="text-gray-800 text-xl font-semibold mt-6 mb-3">Support</h3>
+          <p className="text-gray-600 text-sm leading-relaxed">Laboris qui Lorem ad tempor ut reprehenderit. Nostrud anim nulla officia ea sit deserunt. Eu eu quis anim aute Laboris qui Lorem ad tempor ut reprehenderit.</p>
+          <button type="button" className="text-gray-800 border border-gray-300 px-4 py-2 rounded-lg font-bold flex items-center text-sm mt-6 hover:bg-white">
+            Learn more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" className="rotate-90 ml-1.5"><path fill="#333" d="M12.006 1a1 1 0 0 1 .838.463l7 11a1 1 0 0 1-.985 1.527l-3.364-.48a.434.434 0 0 0-.495.43V20c0 1.645-1.355 3-3 3s-3-1.355-3-3v-6.06a.434.434 0 0 0-.495-.43l-3.364.48a1 1 0 0 1-.985-1.527l7-11a1 1 0 0 1 .85-.463z" data-original="#000000" paintOrder="fill markers stroke"></path></svg>
+          </button>
+        </div>
+
+        <div className="text-left bg-fourthColor rounded-lg shadow p-6">
+          <svg xmlns="http://www.w3.org/2000/svg" className="fill-blue-600 w-12 inline-block bg-white p-3 rounded-full" viewBox="0 0 24 24">
+            <g fill-rule="evenodd" clip-rule="evenodd">
+              <path d="M17.03 8.97a.75.75 0 0 1 0 1.06l-4.2 4.2a.75.75 0 0 1-1.154-.114l-1.093-1.639L8.03 15.03a.75.75 0 0 1-1.06-1.06l3.2-3.2a.75.75 0 0 1 1.154.114l1.093 1.639L15.97 8.97a.75.75 0 0 1 1.06 0z" data-original="#000000" />
+              <path d="M13.75 9.5a.75.75 0 0 1 .75-.75h2a.75.75 0 0 1 .75.75v2a.75.75 0 0 1-1.5 0v-1.25H14.5a.75.75 0 0 1-.75-.75z" data-original="#000000" />
+              <path d="M3.095 3.095C4.429 1.76 6.426 1.25 9 1.25h6c2.574 0 4.57.51 5.905 1.845C22.24 4.429 22.75 6.426 22.75 9v6c0 2.574-.51 4.57-1.845 5.905C19.571 22.24 17.574 22.75 15 22.75H9c-2.574 0-4.57-.51-5.905-1.845C1.76 19.571 1.25 17.574 1.25 15V9c0-2.574.51-4.57 1.845-5.905zm1.06 1.06C3.24 5.071 2.75 6.574 2.75 9v6c0 2.426.49 3.93 1.405 4.845.916.915 2.419 1.405 4.845 1.405h6c2.426 0 3.93-.49 4.845-1.405.915-.916 1.405-2.419 1.405-4.845V9c0-2.426-.49-3.93-1.405-4.845C18.929 3.24 17.426 2.75 15 2.75H9c-2.426 0-3.93.49-4.845 1.405z" data-original="#000000" />
+            </g>
+          </svg>
+          <h3 className="text-gray-800 text-xl font-semibold mt-6 mb-3">Performance</h3>
+          <p className="text-gray-600 text-sm leading-relaxed">Laboris qui Lorem ad tempor ut reprehenderit. Nostrud anim nulla officia ea sit deserunt. Eu eu quis anim aute Laboris qui Lorem ad tempor ut reprehenderit.</p>
+          <button type="button" className="text-gray-800 border border-gray-300 px-4 py-2 rounded-lg font-bold flex items-center text-sm mt-6 hover:bg-white">
+            Learn more <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" className="rotate-90 ml-1.5"><path fill="#333" d="M12.006 1a1 1 0 0 1 .838.463l7 11a1 1 0 0 1-.985 1.527l-3.364-.48a.434.434 0 0 0-.495.43V20c0 1.645-1.355 3-3 3s-3-1.355-3-3v-6.06a.434.434 0 0 0-.495-.43l-3.364.48a1 1 0 0 1-.985-1.527l7-11a1 1 0 0 1 .85-.463z" data-original="#000000" paintOrder="fill markers stroke"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    {/* End Section 2 */}
      </>
   )
 }

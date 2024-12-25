@@ -19,11 +19,12 @@ function Narbar() {
               <li>
                 <a className="text-gray-500 transition hover:text-gray-500/75" href="#"> Guide </a>
               </li>
-              <li>
-                <a className="text-gray-500 transition hover:text-gray-500/75" href="#"> Contact Us </a>
-              </li>
+
               <li>
                 <a className="text-gray-500 transition hover:text-gray-500/75" href="#"> Support </a>
+              </li>
+              <li>
+                <a className="text-gray-500 transition hover:text-gray-500/75" href="#"> Contact Us </a>
               </li>
             </ul>
           </nav>

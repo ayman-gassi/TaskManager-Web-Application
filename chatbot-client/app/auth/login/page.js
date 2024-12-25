@@ -6,7 +6,7 @@ function Login() {
     <div className="flex w-screen flex-wrap text-slate-800">
     <div className="flex w-full flex-col md:w-1/2">
       <div className="flex justify-center pt-12 md:justify-start md:pl-12">
-        <a href="#" className="text-2xl font-bold text-primeColor"> Star Campany </a>
+        <Link href="/" className="text-2xl font-bold text-primeColor"> Star Campany </Link>
       </div>
       <div className="my-auto mx-auto flex flex-col justify-center px-6 pt-8 md:justify-start lg:w-[28rem]">
         <p className="text-center text-3xl font-bold md:leading-tight md:text-left md:text-5xl">
