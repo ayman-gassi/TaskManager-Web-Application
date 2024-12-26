@@ -26,7 +26,7 @@ function Footer() {
         className="inline-flex items-center gap-2 rounded-full border border-white bg-white px-8 py-3 text-[#1F509A] hover:bg-transparent hover:text-white focus:outline-none focus:ring active:bg-white/90"
         href="#"
       >
-        <span className="text-sm font-medium"> Let&apos;s Get Started </span>
+        <span className="text-sm font-medium"> Let's Get Started </span>
 
         <svg
           className="size-5 rtl:rotate-180"

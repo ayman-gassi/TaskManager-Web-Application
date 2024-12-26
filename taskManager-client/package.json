@@ -1,5 +1,5 @@
 {
-  "name": "chatbot-client",
+  "name": "taskManager-client",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -14,7 +14,8 @@
     "next": "15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-icons": "^5.4.0"
+    "react-icons": "^5.4.0",
+    "taskManager-client": "file:"
   },
   "devDependencies": {
     "eslint": "9.17.0",
