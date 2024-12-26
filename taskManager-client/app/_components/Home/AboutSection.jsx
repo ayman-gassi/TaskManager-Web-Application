@@ -1,6 +1,20 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { FaRobot, FaArrowRight } from "react-icons/fa";
 import { motion } from "framer-motion";
+
 function AboutSection() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <>
     <div className="bg-gradient-to-br from-[#1F509A] via-[#1F509A] to-blue-200 min-h-screen mt-2">

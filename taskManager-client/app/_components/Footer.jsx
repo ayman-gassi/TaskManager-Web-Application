@@ -1,5 +1,19 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import { SiTask } from "react-icons/si";
+
 function Footer() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
 <footer className="bg-gray-100">
   <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
