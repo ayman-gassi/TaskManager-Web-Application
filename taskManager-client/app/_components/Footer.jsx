@@ -1,19 +1,5 @@
-'use client';
-
-import { useState, useEffect } from 'react';
 import { SiTask } from "react-icons/si";
-
 function Footer() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
 <footer className="bg-gray-100">
   <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
@@ -26,7 +12,7 @@ function Footer() {
         className="inline-flex items-center gap-2 rounded-full border border-white bg-white px-8 py-3 text-[#1F509A] hover:bg-transparent hover:text-white focus:outline-none focus:ring active:bg-white/90"
         href="#"
       >
-        <span className="text-sm font-medium"> Let's Get Started </span>
+        <span className="text-sm font-medium"> Let&apos;s Get Started </span>
 
         <svg
           className="size-5 rtl:rotate-180"

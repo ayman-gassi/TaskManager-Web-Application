@@ -2,61 +2,86 @@
 import { useState, useCallback, useEffect } from 'react'
 import TaskBoard from '../_components/Overview/TaskBoard'
 import OverviewMenu from '../_components/Shared/OverviewMenu'
-import TaskHeader from '../_components/Shared/TaskHeader'
+import TaskHeader from '../_components/Overview/TaskHeader'
 import TaskFilters from '../_components/Shared/TaskFilters'
 import Sidebar from '../_components/Shared/Sidebar'
-import LoadingState from '../_components/Shared/LoadingState'
 import { FiSettings, FiMoreHorizontal } from 'react-icons/fi'
 
 export default function Overview() {
-  const [tasks, setTasks] = useState({
-    backlog: [],
-    todo: [
-      {
-        id: 2,
-        title: 'Update design system',
-        description: 'Implement new design tokens and components',
-        category: 'Design System',
-        startDate: '2024-12-20',
-        endDate: '2024-12-31',
-        labels: [
-          { type: 'design', name: 'Design System' }
-        ],
-        assignees: [
-          { name: 'Alice Brown', avatar: 'https://ui-avatars.com/api/?name=Alice+Brown' }
-        ],
-        comments: 5,
-        attachments: 2
-      }
-    ],
-    inProgress: [],
-    done: []
-  })
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [searchQuery, setSearchQuery] = useState('')
-  const [isLoading, setIsLoading] = useState(true)
+  const [tasks, setTasks] = useState(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-  useEffect(() => {
-    // Simulate loading delay
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1500)
-
-    return () => clearTimeout(timer)
-  }, [])
+    return {
+      todo: [
+        {
+          id: 'task1',
+          title: 'Overdue Task',
+          description: 'This task is overdue',
+          category: 'Design',
+          dueDate: new Date(today.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          status: 'todo'
+        },
+        {
+          id: 'task2',
+          title: 'Due Today',
+          description: 'This task is due today',
+          category: 'Development',
+          dueDate: today.toISOString().split('T')[0],
+          status: 'todo'
+        },
+        {
+          id: 'task3',
+          title: 'Due in 3 Days',
+          description: 'This task is due soon',
+          category: 'Frontend',
+          dueDate: new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          status: 'todo'
+        },
+        {
+          id: 'task4',
+          title: 'Due in 7 Days',
+          description: 'This task is due in a week',
+          category: 'Backend',
+          dueDate: new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          status: 'todo'
+        },
+        {
+          id: 'task5',
+          title: 'Due in 14 Days',
+          description: 'This task is due in two weeks',
+          category: 'Database',
+          dueDate: new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          status: 'todo'
+        }
+      ],
+      inProgress: [],
+      done: [],
+      pinned: []
+    };
+  });
 
   const handleClearSearch = useCallback(() => {
-    setSearchQuery('')
-  }, [])
+    setSearchQuery('');
+  }, []);
 
-  if (isLoading) {
-    return <LoadingState />
-  }
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <div className="pl-64"> 
+      <div className="pl-64">
         <OverviewMenu />
         <TaskHeader />
         <TaskFilters onSearch={setSearchQuery} searchQuery={searchQuery} onClearSearch={handleClearSearch} />
@@ -67,5 +92,5 @@ export default function Overview() {
         </main>
       </div>
     </div>
-  )
+  );
 }

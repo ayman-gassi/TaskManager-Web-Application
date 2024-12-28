@@ -2,8 +2,10 @@
 
 import SettingsLayout from '../_components/Settings/SettingsLayout'
 import { useState, useEffect, useRef } from 'react'
+import { useTheme } from '../_context/ThemeContext'
 
 export default function GeneralSettings() {
+  const { theme, changeTheme } = useTheme()
   const [timeFormat, setTimeFormat] = useState('24')
   const [showLanguage, setShowLanguage] = useState(false)
   const [showTimezone, setShowTimezone] = useState(false)
@@ -30,12 +32,25 @@ export default function GeneralSettings() {
     }
   }, [])
 
+  const handleSettingChange = (setting, value) => {
+    switch (setting) {
+      case 'theme':
+        changeTheme(value)
+        break
+      case 'timeFormat':
+        setTimeFormat(value)
+        break
+      default:
+        break
+    }
+    handleSave()
+  }
+
   const handleSave = () => {
-    // Here you would typically save to your backend
     setShowSuccess(true)
     setTimeout(() => {
       setShowSuccess(false)
-    }, 3000) // Hide after 3 seconds
+    }, 3000)
   }
 
   return (
@@ -164,7 +179,7 @@ export default function GeneralSettings() {
           <h2 className="text-[15px] font-medium text-gray-700 mb-3">Time Format</h2>
           <div className="flex space-x-3">
             <button
-              onClick={() => setTimeFormat('24')}
+              onClick={() => handleSettingChange('timeFormat', '24')}
               className={`h-12 px-6 text-[15px] rounded-full transition-all ${
                 timeFormat === '24'
                 ? 'bg-blue-50 text-blue-600 border border-blue-200 shadow-sm'
@@ -174,7 +189,7 @@ export default function GeneralSettings() {
               24 Hours
             </button>
             <button
-              onClick={() => setTimeFormat('12')}
+              onClick={() => handleSettingChange('timeFormat', '12')}
               className={`h-12 px-6 text-[15px] rounded-full transition-all ${
                 timeFormat === '12'
                 ? 'bg-blue-50 text-blue-600 border border-blue-200 shadow-sm'
@@ -182,6 +197,32 @@ export default function GeneralSettings() {
               }`}
             >
               12 Hours
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-[15px] font-medium text-gray-700 mb-3">Theme</h2>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => handleSettingChange('theme', 'light')}
+              className={`h-12 px-6 text-[15px] rounded-full transition-all ${
+                theme === 'light'
+                ? 'bg-blue-50 text-blue-600 border border-blue-200 shadow-sm'
+                : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600 border border-transparent hover:border-blue-200'
+              }`}
+            >
+              Light
+            </button>
+            <button
+              onClick={() => handleSettingChange('theme', 'dark')}
+              className={`h-12 px-6 text-[15px] rounded-full transition-all ${
+                theme === 'dark'
+                ? 'bg-blue-50 text-blue-600 border border-blue-200 shadow-sm'
+                : 'text-gray-600 hover:bg-blue-50 hover:text-blue-600 border border-transparent hover:border-blue-200'
+              }`}
+            >
+              Dark
             </button>
           </div>
         </div>

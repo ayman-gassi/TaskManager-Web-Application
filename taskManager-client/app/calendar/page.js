@@ -6,11 +6,12 @@ import OverviewMenu from '../_components/Shared/OverviewMenu'
 import TaskHeader from '../_components/Calendar/CalendarHeader'
 import TaskFilters from '../_components/Calendar/CalendarFilter'
 import Sidebar from '../_components/Shared/Sidebar'
-import LoadingState from '../_components/Shared/LoadingState'
 import { useTheme } from '@/app/_context/ThemeContext'
 
 export default function Calendar() {
   const { theme, themes } = useTheme()
+  const currentTheme = themes[theme] || themes.light // Fallback to light theme if current theme is undefined
+  const [searchQuery, setSearchQuery] = useState('')
   const [tasks, setTasks] = useState({
     backlog: [],
     todo: [
@@ -242,7 +243,6 @@ export default function Calendar() {
     ]
   })
 
-  const [searchQuery, setSearchQuery] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [defaultView, setDefaultView] = useState('month')
 
@@ -253,6 +253,10 @@ export default function Calendar() {
     }, 1500)
 
     return () => clearTimeout(timer)
+  }, [])
+
+  const handleSearch = useCallback((query) => {
+    setSearchQuery(query)
   }, [])
 
   const handleClearSearch = useCallback(() => {
@@ -275,25 +279,37 @@ export default function Calendar() {
     }
   }
 
-  if (isLoading) {
-    return <LoadingState />
-  }
+  const filteredTasks = Object.values(tasks).flat().filter(task => {
+    if (!searchQuery) return true
+    const searchLower = searchQuery.toLowerCase()
+    return (
+      task.title.toLowerCase().includes(searchLower) ||
+      task.description.toLowerCase().includes(searchLower) ||
+      task.category.toLowerCase().includes(searchLower)
+    )
+  })
+
+
 
   return (
-    <div className={`min-h-screen ${themes[theme].primary}`}>
+    <div className={`min-h-screen ${currentTheme.bg}`}>
       <Sidebar />
-      <div className={`pl-64 ${themes[theme].text}`}>
+      <div className={`pl-64 ${currentTheme.text}`}>
         <OverviewMenu />
         <TaskHeader
           defaultView={defaultView}
           onSettingsChange={handleSettingsChange}
         />
-        <TaskFilters onSearch={setSearchQuery} searchQuery={searchQuery} onClearSearch={handleClearSearch} />
+        <TaskFilters 
+          onSearch={handleSearch} 
+          searchQuery={searchQuery} 
+          onClearSearch={handleClearSearch} 
+        />
         <main className="p-6">
           <div className="max-w-7xl mx-auto">
             <CalendarView 
-              tasks={tasks} 
-              searchQuery={searchQuery} 
+              tasks={filteredTasks}
+              searchQuery={searchQuery}
               onClearSearch={handleClearSearch}
               onDeleteTask={handleDeleteTask}
               defaultView={defaultView}

@@ -1,21 +1,25 @@
 {
   "name": "taskManager-server",
   "version": "1.0.0",
+  "description": "A server-side application for task management.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Your Name",
   "license": "ISC",
-  "description": "",
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "@huggingface/inference": "^2.8.1",
+    "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
-    "chatbot-server": "file:",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.9.2",
-    "taskManager-server": "file:"
+    "nodemailer": "^6.9.16"
   }
 }

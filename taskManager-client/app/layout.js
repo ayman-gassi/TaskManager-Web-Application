@@ -1,22 +1,35 @@
-import { Inter } from 'next/font/google'
-import './globals.css'
+'use client'
+
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
 import { ThemeProvider } from './_context/ThemeContext'
+import { TaskProvider } from './_context/TaskContext'
 
-const inter = Inter({ subsets: ['latin'] })
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
 
-export const metadata = {
-  title: 'Task Manager',
-  description: 'A comprehensive task management application',
-}
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body suppressHydrationWarning className={inter.className}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
+      >
         <ThemeProvider>
-          {children}
+          <TaskProvider>
+            {children}
+          </TaskProvider>
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

@@ -1,20 +1,21 @@
-export async function DELETE(request, { params }) {
+export async function DELETE(request, context) {
   try {
-    const { id } = params;
-    
+    const id = context.params.id
+
     // Here you would typically delete the task from your database
     // For now, we'll just return a success response
-    
-    return new Response(null, {
+    return new Response(JSON.stringify({ message: 'Task deleted successfully' }), {
       status: 200,
-    });
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
   } catch (error) {
-    console.error('Error deleting task:', error);
     return new Response(JSON.stringify({ error: 'Failed to delete task' }), {
       status: 500,
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })
   }
 }

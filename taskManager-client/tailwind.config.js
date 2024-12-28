@@ -33,14 +33,7 @@ module.exports = {
           '100%': { strokeDashoffset: '0' },
         },
       },
-      colors: {
-        primeColor: '#074799', 
-        secondColor: '#605EA1', 
-        thirdColor: '#1F509A',
-        fourthColor: '#F7F7F7',
-      },
     },
   },
   plugins: [],
 }
-
