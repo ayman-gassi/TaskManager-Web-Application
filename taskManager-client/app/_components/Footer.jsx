@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { SiTask } from "react-icons/si";
 
@@ -22,9 +23,9 @@ function Footer() {
     >
       <strong className="text-xl text-white sm:text-xl"> Make Your Next Career Move! </strong>
 
-      <a
+      <Link
         className="inline-flex items-center gap-2 rounded-full border border-white bg-white px-8 py-3 text-[#1F509A] hover:bg-transparent hover:text-white focus:outline-none focus:ring active:bg-white/90"
-        href="#"
+        href="/auth/register"
       >
         <span className="text-sm font-medium"> Let's Get Started </span>
 
@@ -42,7 +43,7 @@ function Footer() {
             d="M17 8l4 4m0 0l-4 4m4-4H3"
           />
         </svg>
-      </a>
+      </Link>
     </div>
 
 

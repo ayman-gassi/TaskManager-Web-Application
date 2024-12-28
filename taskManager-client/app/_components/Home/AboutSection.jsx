@@ -1,10 +1,10 @@
 import { FaRobot, FaArrowRight , FaTachometerAlt ,FaCog , FaLock , FaHeadset } from "react-icons/fa";
-import { motion } from "framer-motion";
+import Link from "next/link";
 function AboutSection() {
   return (
     <>
     {/* Section 1 */}
-    <div className="bg-gradient-to-br from-primeColor via-thirdColor to-secondColor min-h-screen mt-2">
+    <div className="bg-gradient-to-br from-primeColor via-thirdColor to-secondColor min-h-screen mt-2 " id="AboutSection" >
         <div className="container mx-auto px-14 py-16 lg:py-24">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             <div className="lg:w-1/2 text-white" >
@@ -15,12 +15,12 @@ function AboutSection() {
                 Get instant help, set reminders, and manage your tasks seamlessly with our AI-powered chatbot. Boost your productivity and never miss a deadline again.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button
+                <Link 
                   className="px-8 py-4 bg-transparent border-2 border-white text-white rounded-full font-semibold text-lg hover:bg-white hover:text-primeColor transition-all duration-300"
-                  aria-label="Learn More"
+                  href="/guide"
                 >
                   Learn More
-                </button>
+                </Link>
               </div>
               </div>
 
@@ -49,12 +49,12 @@ function AboutSection() {
                     className="w-full p-4 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:border-primeColor"
                     aria-label="Message input"
                   />
-                  <button
+                  <Link
                     className="absolute right-4 top-1/2 transform -translate-y-1/2 text-thirdColor hover:text-primeColor"
-                    aria-label="Send message"
+                    href='/auth/login'
                   >
                     <FaArrowRight className="text-xl" />
-                  </button>
+                  </Link>
                 </div>
               </div>
           </div>

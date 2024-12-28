@@ -3,32 +3,25 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import axios from "axios";
-
+import Cookies from 'js-cookie';
+import { useRouter } from 'next/navigation';
+import ErrorAlert from "../../_components/Notifications/ErrorAlert";
 function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
+  const navigate = useRouter();
   const onSubmit = async (data) => {
     try {
-      const response = await axios.post("http://localhost:900/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Something went wrong");
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_URL+"users/login", data);
+      if(response.data.state === false){  
+        setErrorMessage(response.data.message);
       }
-
-      const responseData = await response.json();
-      setSuccessMessage("Login successful!");
-      setErrorMessage(""); 
-      console.log("Response Data:", responseData);
+      else{
+        Cookies.set('token', response.data.token, { expires: 7, path: '/' });
+        navigate.push('/');
+      }
     } catch (error) {
-      setErrorMessage(error.message);
-      setSuccessMessage(""); 
+        setErrorMessage(error.message);
     }
   };
 
@@ -45,7 +38,7 @@ function Login() {
           </p>
           <p className="mt-6 text-center font-medium md:text-left">Sign in to your account below.</p>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-stretch pt-3 md:pt-8">
+          <form autoComplete="on" onSubmit={handleSubmit(onSubmit)} className="flex flex-col items-stretch pt-3 md:pt-8">
             <div className="flex flex-col pt-4">
               <div className="relative flex overflow-hidden rounded-md border-2 transition focus-within:border-primeColor">
                 <input
@@ -70,9 +63,8 @@ function Login() {
               </div>
               {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
             </div>
-            {errorMessage && <p className="mt-4 text-center text-sm text-red-500">{errorMessage}</p>}
-            {successMessage && <p className="mt-4 text-center text-sm text-green-500">{successMessage}</p>}
-            <a href="#" className="mb-6 text-center text-sm font-medium text-gray-600 md:text-left">Forgot password?</a>
+            {errorMessage && <ErrorAlert errorMessage={errorMessage} />}
+            <Link href="/auth/forgotPassword" className="mb-6 text-center text-sm font-medium text-gray-600 md:text-left">Forgot password?</Link>
             <button
               type="submit"
               className="rounded-lg bg-primeColor px-4 py-2 text-center text-base font-semibold text-white shadow-md outline-none ring-thirdColor ring-offset-2 transition hover:bg-thirdColor focus:ring-2 md:w-32"

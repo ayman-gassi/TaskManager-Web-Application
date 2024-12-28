@@ -7,6 +7,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      scrollBehavior: {
+        smooth: 'smooth',
+      },
       animation: {
         'fadeIn': 'fadeIn 0.5s ease-out',
         'slideUp': 'slideUp 0.5s ease-out',

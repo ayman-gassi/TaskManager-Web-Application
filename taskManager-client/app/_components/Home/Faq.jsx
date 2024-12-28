@@ -1,5 +1,16 @@
-
+import faqData from '@/app/_content/faqData.json';
+import React, { useEffect, useState } from 'react';
 function Faq() {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredData, setFilteredData] = useState(faqData);
+  
+    useEffect(() => {
+      setFilteredData(
+        faqData.filter(item =>
+          item.title.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      );
+    }, [searchTerm]);
   return (
     <div>
     <div className="relative py-24 bg-gradient-to-b from-primeColor to-thirdColor flex justify-center items-center">
@@ -13,106 +24,34 @@ function Faq() {
                         <line x1={21} y1={21} x2={15} y2={15} />
                     </svg>
                 </div>
-                <input type="text" placeholder="Search for answers" className=" ml-4 w-full bg-transparent text-base leading-none text-white placeholder-white focus:outline-none" />
+                {/* <input type="text" placeholder="Search for answers" className=" ml-4 w-full bg-transparent text-base leading-none text-white placeholder-white focus:outline-none" /> */}
+                <input
+                type="text"
+                placeholder="Search for answers"
+                className=" ml-4 w-full bg-transparent text-base leading-none text-white placeholder-white focus:outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
         </div>
     </div>
     <div className="container mx-auto py-9 flex flex-col items-center justify-center">
         <div role="list" className="w-11/12 md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div role="listitem" className="focus:outline-none">
-                <a href="javascript:void(0)" className="bg-white focus:outline-none shadow-md flex items-center p-4 lg:p-8 cursor-pointer">
-                    <div className="flex">
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-settings" width={32} height={32} viewBox="0 0 24 24" strokeWidth="1.5" stroke="#1F509A" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z" />
-                                <circle cx={12} cy={12} r={3} />
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-base font-medium leading-none text-gray-800">Getting Started</p>
-                            <p className="text-xs lg:text-sm xl:text-base lg:leading-normal text-gray-600 mt-2 2xl:w-7/12">Get started fast with installation and theme setup instructions</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div role="listitem" className="focus:outline-none">
-                <a href="javascript:void(0)" className="bg-white focus:outline-none shadow-md flex items-center p-4 lg:p-8 cursor-pointer">
-                    <div className="flex">
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-users" width={32} height={32} viewBox="0 0 24 24" strokeWidth="1.5" stroke="#1F509A" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <circle cx={9} cy={7} r={4} />
-                                <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                                <path d="M21 21v-2a4 4 0 0 0 -3 -3.85" />
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-base font-medium leading-none text-gray-800">User Account</p>
-                            <p className="text-xs lg:text-sm xl:text-base lg:leading-normal text-gray-600 mt-2 2xl:w-7/12">Get started fast with installation and theme setup instructions</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div role="listitem" className="focus:outline-none">
-                <a href="javascript:void(0)" className="bg-white focus:outline-none shadow-md flex items-center p-4 lg:p-8 cursor-pointer">
-                    <div className="flex">
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-adjustments-horizontal" width={32} height={32} viewBox="0 0 24 24" strokeWidth="1.5" stroke="#1F509A" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <circle cx={14} cy={6} r={2} />
-                                <line x1={4} y1={6} x2={12} y2={6} />
-                                <line x1={16} y1={6} x2={20} y2={6} />
-                                <circle cx={8} cy={12} r={2} />
-                                <line x1={4} y1={12} x2={6} y2={12} />
-                                <line x1={10} y1={12} x2={20} y2={12} />
-                                <circle cx={17} cy={18} r={2} />
-                                <line x1={4} y1={18} x2={15} y2={18} />
-                                <line x1={19} y1={18} x2={20} y2={18} />
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-base font-medium leading-none text-gray-800">Product Features</p>
-                            <p className="text-xs lg:text-sm xl:text-base lg:leading-normal text-gray-600 mt-2 2xl:w-7/12">Get started fast with installation and theme setup instructions</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div role="listitem" className="focus:outline-none">
-                <a href="javascript:void(0)" className="bg-white focus:outline-none shadow-md flex items-center p-4 lg:p-8 cursor-pointer">
-                    <div className="flex">
-                        <div>
-                            <svg width={33} height={33} viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M10.3125 23.7188L2.0625 16.5L10.3125 9.28125M22.6875 23.7188L30.9375 16.5L22.6875 9.28125" stroke="#1F509A" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-base font-medium leading-none text-gray-800">Customization Options</p>
-                            <p className="text-xs lg:text-sm xl:text-base lg:leading-normal text-gray-600 mt-2 2xl:w-7/12">Get started fast with installation and theme setup instructions</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            
-            <div role="listitem" className="focus:outline-none">
-                <a href="javascript:void(0)" className="bg-white focus:outline-none shadow-md flex items-center p-4 lg:p-8 cursor-pointer">
-                    <div className="flex">
-                        <div>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-lock" width={32} height={32} viewBox="0 0 24 24" strokeWidth="1.5" stroke="#1F509A" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                <rect x={5} y={11} width={14} height={10} rx={2} />
-                                <circle cx={12} cy={16} r={1} />
-                                <path d="M8 11v-4a4 4 0 0 1 8 0v4" />
-                            </svg>
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-base font-medium leading-none text-gray-800">Security Options</p>
-                            <p className="text-xs lg:text-sm xl:text-base lg:leading-normal text-gray-600 mt-2 2xl:w-7/12">Get started fast with installation and theme setup instructions</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            {filteredData.length != 0 &&  (
+                 filteredData.map((item, index) => (
+                <div key={index} role="listitem" className="focus:outline-none">
+                    <div className="bg-white focus:outline-none shadow-md flex  p-4 lg:p-8 cursor-pointer">
+                            <div className='w-10 p-2 h-8 flex items-center justify-center bg-primeColor text-base text-white rounded-md'>
+                                 {index+1}
+                            </div>
+                            <div className="ml-4">
+                            <p className="text-base font-medium leading-none text-primeColor">{item.title}</p>
+                            <p className="text-xs lg:text-sm xl:text-base lg:leading-normal text-gray-600 mt-2 2xl:w-7/12">{item.description}</p>
+                            </div>
+                 </div>
+                 </div>
+            ))
+            )}
         </div>
         <div className="mt-9 md:mt-11 lg:mt-16">
             <div className="text-center">

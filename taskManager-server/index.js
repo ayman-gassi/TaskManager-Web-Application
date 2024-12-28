@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRouter from './routes/userRouter.js';
 import taskRouter from './routes/taskRouter.js';
+import aiRouter from './routes/aiRouter.js';
 const app = express();
 
 // Server configuration
@@ -23,13 +24,9 @@ app.listen(port, () => {
         console.log('Connected to MongoDB');
 
         // Route for API
-        app.use('/apiV1/users',userRouter);
-        app.use('/apiV1/tasks',taskRouter);
-
-        // Route for API with AI
-        app.use('/apiV2', (req, res) => {
-            res.send('Hello from API V2');
-        });
+        app.use('/api/users',userRouter);
+        app.use('/api/tasks',taskRouter);
+        app.use('/api/ai',aiRouter);    
     }).catch((error) => {
         console.error('Error connecting to MongoDB:', error);
     });
