@@ -201,7 +201,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 **Ayman Gassi**
+**Hamza Taki**
 - GitHub: [@ayman-gassi](https://github.com/ayman-gassi)
+- GitHub: [@HamzaTakiX](https://github.com/HamzaTakiX)
 
 ## 🙏 Acknowledgments
 
