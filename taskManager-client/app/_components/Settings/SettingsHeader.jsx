@@ -1,25 +1,47 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState } from 'react'
-import { FiBell } from 'react-icons/fi'
+import { usePathname, useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { FiBell, FiUser, FiSettings } from 'react-icons/fi'
 import NotificationDropdown from '../Shared/NotificationDropdown'
 import ProfileDropdown from '../ProfileDropdown'
+import { motion } from 'framer-motion'
+import { useUser } from '@/app/_context/UserContext'
+import Image from 'next/image'
 
 export default function SettingsHeader({ showSuccess, headerOnly, contentOnly }) {
   const pathname = usePathname()
+  const router = useRouter()
   const [isNotifOpen, setIsNotifOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [userName, setUserName] = useState('')
+  const { profileImage } = useUser()
+  const [showTooltip, setShowTooltip] = useState(false)
+  const [activeTab, setActiveTab] = useState(pathname)
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('userName')
+    if (storedName) setUserName(storedName)
+  }, [])
+
+  useEffect(() => {
+    setActiveTab(pathname)
+  }, [pathname])
 
   const handleNotifClick = () => {
     setIsNotifOpen(!isNotifOpen)
-    setIsProfileOpen(false) // Close profile dropdown when opening notifications
+    setIsProfileOpen(false)
   }
 
   const handleProfileClick = () => {
     setIsProfileOpen(!isProfileOpen)
-    setIsNotifOpen(false) // Close notifications when opening profile dropdown
+    setIsNotifOpen(false)
+  }
+
+  const handleTabClick = (href) => {
+    setActiveTab(href)
+    router.push(href)
   }
 
   const tabs = [
@@ -31,29 +53,50 @@ export default function SettingsHeader({ showSuccess, headerOnly, contentOnly })
   const headerElements = (
     <div className="flex items-center space-x-4">
       <div className="relative">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={handleNotifClick}
           className="p-2 text-gray-500 hover:text-gray-700 focus:outline-none"
         >
           <FiBell className="h-5 w-5" />
           <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full"></span>
-        </button>
+        </motion.button>
         <NotificationDropdown 
           isOpen={isNotifOpen} 
           onClose={() => setIsNotifOpen(false)} 
         />
       </div>
       <div className="relative">
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={handleProfileClick}
-          className="flex items-center focus:outline-none"
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+          className="flex items-center focus:outline-none relative"
         >
-          <img
-            src="/images/ayman-wa3r.jpg"
-            alt="Profile"
-            className="w-10 h-10 rounded-full object-cover border-2 border-gray-200 hover:border-blue-500 transition-colors"
-          />
-        </button>
+          <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-200">
+            {profileImage ? (
+              <Image
+                src={`http://localhost:9000${profileImage}`}
+                alt="Profile"
+                width={40}
+                height={40}
+                className="object-cover w-full h-full"
+              />
+            ) : userName ? (
+              userName.charAt(0).toUpperCase()
+            ) : (
+              <FiUser className="h-6 w-6" />
+            )}
+          </div>
+          {showTooltip && userName && (
+            <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap">
+              {userName}
+            </div>
+          )}
+        </motion.button>
         <ProfileDropdown 
           isOpen={isProfileOpen} 
           onClose={() => setIsProfileOpen(false)} 
@@ -65,6 +108,20 @@ export default function SettingsHeader({ showSuccess, headerOnly, contentOnly })
   // Content elements (success message and tabs)
   const contentElements = (
     <>
+      <div className="mb-6">
+        <div className="flex items-start gap-4">
+          <FiSettings className="h-12 w-12 text-blue-600 animate-spin-slow -mt-1" />
+          <div>
+            <h1 className="text-3xl sm:text-4xl font-bold text-blue-600">
+              Settings
+            </h1>
+            <p className="mt-3 text-sm text-gray-500 font-medium">
+              Customize your workspace and preferences
+            </p>
+          </div>
+        </div>
+      </div>
+
       {showSuccess && (
         <div className="flex items-center bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg shadow-sm mb-6">
           <svg 
@@ -82,21 +139,21 @@ export default function SettingsHeader({ showSuccess, headerOnly, contentOnly })
         </div>
       )}
       {/* Tabs */}
-      <nav className="-mb-px flex space-x-8" aria-label="Tabs">
+      <nav className="flex space-x-1 bg-gray-100/80 p-1 rounded-lg" aria-label="Tabs">
         {tabs.map((tab) => (
-          <Link
+          <button
             key={tab.name}
-            href={tab.href}
+            onClick={() => handleTabClick(tab.href)}
             className={`
-              whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm
-              ${pathname === tab.href
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 text-center
+              ${activeTab === tab.href
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
               }
             `}
           >
             {tab.name}
-          </Link>
+          </button>
         ))}
       </nav>
     </>

@@ -2,24 +2,148 @@
 
 import { motion } from 'framer-motion'
 import { FiX, FiUser, FiGlobe, FiMessageCircle, FiPhone, FiMail, FiSave } from 'react-icons/fi'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useUser } from '@/app/_context/UserContext'
+import axios from 'axios'
+import Cookies from 'js-cookie'
 
 export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave }) {
-  const [formData, setFormData] = useState(initialData || {
-    fullName: '',
-    country: '',
-    languages: '',
-    phone: '',
-    email: ''
-  })
+  const { updateUserName, updateUserEmail, updateUserPhone, updateUserLanguages, updateUserLocation } = useUser()
+  const [formData, setFormData] = useState(() => {
+    // Initialize form data with proper handling of empty/none values
+    const data = {
+      fullName: initialData?.fullName || '',
+      country: initialData?.country || '',
+      languages: initialData?.languages || '',
+      phone: initialData?.phone || '',
+      email: initialData?.email || ''
+    };
+    
+    // Clean up 'none' values
+    if (data.languages === 'none') data.languages = '';
+    if (data.phone === 'none') data.phone = '';
+    
+    return data;
+  });
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [attention, setAttention] = useState(null)
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData(prev => {
+        const newData = {
+          fullName: initialData.fullName || prev.fullName,
+          country: initialData.country || prev.country,
+          languages: initialData.languages === 'none' ? '' : (initialData.languages || prev.languages),
+          phone: initialData.phone === 'none' ? '' : (initialData.phone || prev.phone),
+          email: initialData.email || prev.email
+        };
+        return newData;
+      });
+    }
+  }, [initialData]);
+
+  const validateForm = () => {
+    // Check if any changes were made
+    const hasChanges = Object.keys(formData).some(key => formData[key] !== initialData[key]);
+    if (!hasChanges) {
+      setAttention("No changes were made to update");
+      return false;
+    }
+
+    // Validate email
+    if (!formData.email) {
+      setError("Email is required");
+      return false;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return false;
+    }
+
+    // Validate full name
+    if (!formData.fullName.trim()) {
+      setError("Full name is required");
+      return false;
+    }
+
+    // Clear any previous messages
+    setError(null);
+    setAttention(null);
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Reset messages
+    setError(null);
+    setAttention(null);
+
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      const response = await axios.put('http://localhost:9000/api/users/profile', {
+        fullName: formData.fullName,
+        location: formData.country,
+        languages: formData.languages || 'none',
+        phoneNumber: formData.phone || 'none',
+        email: formData.email
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.data.state) {
+        const { user } = response.data;
+        updateUserName(user.fullName);
+        updateUserLocation(user.location);
+        updateUserLanguages(user.languages);
+        updateUserPhone(user.phoneNumber);
+        updateUserEmail(user.email);
+
+        onSave({
+          fullName: user.fullName,
+          country: user.location,
+          languages: user.languages,
+          phone: user.phoneNumber,
+          email: user.email
+        });
+
+        onClose();
+      } else {
+        throw new Error(response.data.message);
+      }
+    } catch (err) {
+      console.error('Profile update error:', err);
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setError('Please login again to update your profile');
+        Cookies.remove('token');
+        localStorage.removeItem('token');
+      } else {
+        setError(err.response?.data?.message || err.message || 'Failed to update profile');
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!isOpen) return null
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    onSave(formData)
-    onClose()
-  }
 
   const inputFields = [
     {
@@ -82,6 +206,18 @@ export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave 
 
         <form onSubmit={handleSubmit} className="p-6">
           <div className="space-y-4">
+            {error && (
+              <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200">
+                {error}
+              </div>
+            )}
+            
+            {attention && (
+              <div className="p-3 text-sm text-amber-600 bg-amber-50 rounded-lg border border-amber-200">
+                {attention}
+              </div>
+            )}
+            
             {inputFields.map((field) => (
               <div key={field.id} className="space-y-1">
                 <label htmlFor={field.id} className="block text-sm font-medium text-gray-700">
@@ -99,6 +235,7 @@ export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave 
                     onChange={(e) => setFormData({ ...formData, [field.id]: e.target.value })}
                     placeholder={field.placeholder}
                     className="block w-full pl-10 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
                   />
                 </div>
               </div>
@@ -109,16 +246,28 @@ export default function ProfileInfoModal({ isOpen, onClose, initialData, onSave 
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={isLoading}
+              className={`flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#16A34A] rounded-lg hover:bg-[#15803D] transition-colors ${
+                isLoading ? 'opacity-75 cursor-not-allowed' : ''
+              }`}
             >
-              <FiSave className="w-4 h-4" />
-              Save Changes
+              {isLoading ? (
+                <>
+                  <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+                  Updating...
+                </>
+              ) : (
+                <>
+                  <FiSave className="w-4 h-4" />
+                  Save Changes
+                </>
+              )}
             </button>
           </div>
         </form>

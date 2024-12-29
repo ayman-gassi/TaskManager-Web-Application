@@ -1,24 +1,27 @@
 'use client'
 
-import Link from 'next/link'
-import { FiGrid, FiList, FiBell, FiCalendar, FiSearch, FiSettings } from 'react-icons/fi'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { FiGrid, FiList, FiBell, FiCalendar, FiSearch, FiSettings, FiUser } from 'react-icons/fi'
 import NotificationDropdown from './NotificationDropdown'
 import ProfileDropdown from '../ProfileDropdown'
 import { motion } from 'framer-motion'
 import { useTheme } from '@/app/_context/ThemeContext'
+import { useUser } from '@/app/_context/UserContext'
+import Image from 'next/image'
 
 export default function OverviewMenu() {
   const [isNotifOpen, setIsNotifOpen] = useState(false)
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [showTooltip, setShowTooltip] = useState(false)
   const pathname = usePathname()
   const { theme, themes } = useTheme()
   const currentTheme = themes[theme] || themes.light
-  const isCalendarPage = pathname === '/calendar'
+  const { profileImage, userName } = useUser()
 
   return (
-    <nav className={isCalendarPage ? `${currentTheme.primary} border-b ${currentTheme.border}` : "bg-white border-b border-gray-200"}>
+    <nav className={pathname === '/calendar' ? `${currentTheme.primary} border-b ${currentTheme.border}` : "bg-white border-b border-gray-200"}>
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between h-16">
           <div className="flex items-center flex-1">
@@ -29,7 +32,7 @@ export default function OverviewMenu() {
                   className={`flex items-center h-full px-3 text-sm font-medium group ${
                     pathname === '/overview' 
                       ? 'text-blue-600' 
-                      : isCalendarPage 
+                      : pathname === '/calendar' 
                         ? `${currentTheme.secondaryText} hover:${currentTheme.text}` 
                         : 'text-gray-500 hover:text-gray-700'
                   }`}
@@ -38,7 +41,7 @@ export default function OverviewMenu() {
                     <FiGrid className="mr-2 h-4 w-4" />
                     <span>Board</span>
                   </div>
-                  <div className={`absolute bottom-0 left-3 right-3 h-0.5 ${isCalendarPage ? currentTheme.accent : 'bg-blue-600'} transition-transform ${
+                  <div className={`absolute bottom-0 left-3 right-3 h-0.5 ${pathname === '/calendar' ? currentTheme.accent : 'bg-blue-600'} transition-transform ${
                     pathname === '/overview' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                   }`}></div>
                 </Link>
@@ -50,7 +53,7 @@ export default function OverviewMenu() {
                   className={`flex items-center h-full px-3 text-sm font-medium group ${
                     pathname === '/list' 
                       ? 'text-blue-600' 
-                      : isCalendarPage 
+                      : pathname === '/calendar' 
                         ? `${currentTheme.secondaryText} hover:${currentTheme.text}` 
                         : 'text-gray-500 hover:text-gray-700'
                   }`}
@@ -59,7 +62,7 @@ export default function OverviewMenu() {
                     <FiList className="mr-2 h-4 w-4" />
                     <span>List</span>
                   </div>
-                  <div className={`absolute bottom-0 left-3 right-3 h-0.5 ${isCalendarPage ? currentTheme.accent : 'bg-blue-600'} transition-transform ${
+                  <div className={`absolute bottom-0 left-3 right-3 h-0.5 ${pathname === '/calendar' ? currentTheme.accent : 'bg-blue-600'} transition-transform ${
                     pathname === '/list' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                   }`}></div>
                 </Link>
@@ -71,7 +74,7 @@ export default function OverviewMenu() {
                   className={`flex items-center h-full px-3 text-sm font-medium group ${
                     pathname === '/calendar' 
                       ? 'text-blue-600'
-                      : isCalendarPage 
+                      : pathname === '/calendar' 
                         ? `${currentTheme.secondaryText} hover:${currentTheme.text}` 
                         : 'text-gray-500 hover:text-gray-700'
                   }`}
@@ -87,17 +90,16 @@ export default function OverviewMenu() {
               </div>
             </div>
 
-            {/* Search Bar */}
             <div className="ml-6 flex-1 max-w-lg">
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiSearch className={`h-4 w-4 ${isCalendarPage ? currentTheme.secondaryText : 'text-gray-400'}`} />
+                  <FiSearch className={`h-4 w-4 ${pathname === '/calendar' ? currentTheme.secondaryText : 'text-gray-400'}`} />
                 </div>
                 <input
                   type="text"
                   placeholder="Search tasks..."
                   className={`block w-full pl-10 pr-4 py-1.5 text-sm ${
-                    isCalendarPage 
+                    pathname === '/calendar' 
                       ? `${currentTheme.bg} border ${currentTheme.border} ${currentTheme.text} focus:ring-1 focus:ring-blue-500/20 focus:border-blue-500`
                       : 'bg-white border border-gray-200 focus:ring-1 focus:ring-blue-500 focus:border-blue-500'
                   } rounded-md focus:outline-none placeholder-gray-400`}
@@ -111,7 +113,7 @@ export default function OverviewMenu() {
               <button
                 onClick={() => setIsNotifOpen(!isNotifOpen)}
                 className={`p-2 ${
-                  isCalendarPage 
+                  pathname === '/calendar' 
                     ? `${currentTheme.secondaryText} hover:${currentTheme.text}` 
                     : 'text-gray-500 hover:text-gray-700'
                 } focus:outline-none`}
@@ -143,17 +145,32 @@ export default function OverviewMenu() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
+                onMouseEnter={() => setShowTooltip(true)}
+                onMouseLeave={() => setShowTooltip(false)}
                 className={`flex items-center focus:outline-none ml-2 ${
-                  isCalendarPage 
+                  pathname === '/calendar' 
                     ? `${currentTheme.secondaryText} hover:${currentTheme.text}` 
                     : ''
                 }`}
               >
-                <img
-                  src="/images/ayman-wa3r.jpg"
-                  alt="Profile"
-                  className="w-8 h-8 rounded-full object-cover border border-gray-200"
-                />
+                <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium overflow-hidden">
+                  {profileImage ? (
+                    <Image
+                      src={`http://localhost:9000${profileImage}`}
+                      alt="Profile"
+                      width={32}
+                      height={32}
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <FiUser className="h-5 w-5" />
+                  )}
+                </div>
+                {showTooltip && userName && (
+                  <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap">
+                    {userName}
+                  </div>
+                )}
               </motion.button>
               <ProfileDropdown 
                 isOpen={isProfileOpen} 

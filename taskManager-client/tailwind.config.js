@@ -7,11 +7,15 @@ module.exports = {
   ],
   theme: {
     extend: {
+      scrollBehavior: {
+        smooth: 'smooth',
+      },
       animation: {
         'fadeIn': 'fadeIn 0.5s ease-out',
         'slideUp': 'slideUp 0.5s ease-out',
         'draw': 'draw 1s ease-out forwards',
         'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'spin-slow': 'spin 8s linear infinite',
       },
       keyframes: {
         fadeIn: {
@@ -33,7 +37,19 @@ module.exports = {
           '100%': { strokeDashoffset: '0' },
         },
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      colors: {
+        primeColor: '#074799', 
+        secondColor: '#605EA1', 
+        thirdColor: '#1F509A',
+        fourthColor: '#F7F7F7',
+      },
     },
   },
   plugins: [],
 }
+

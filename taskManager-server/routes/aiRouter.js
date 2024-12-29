@@ -1,18 +1,18 @@
 import express from 'express';
 import * as conversationController from '../controllers/conversationController.js';
-import { checkAuth } from '../middlewares/auth.js';
+import { authenticateToken } from '../middleware/auth.js';
 const router = express.Router();
 
-router.post('/ask', checkAuth , conversationController.addMessageToConversation);
+router.post('/ask', authenticateToken , conversationController.addMessageToConversation);
 
-router.post('/new', checkAuth , conversationController.createConversation);
+router.post('/new', authenticateToken , conversationController.createConversation);
 
-router.get('/conv', checkAuth , conversationController.getConversationsByUser);
+router.get('/conv', authenticateToken , conversationController.getConversationsByUser);
 
-router.get('/conv/:id', checkAuth ,  conversationController.getConversationById);
+router.get('/conv/:id', authenticateToken ,  conversationController.getConversationById);
 
-router.put('/:id', checkAuth , conversationController.updateConversationTitle);
+router.put('/:id', authenticateToken , conversationController.updateConversationTitle);
 
-router.delete('/:id', checkAuth , conversationController.deleteConversation);
+router.delete('/:id', authenticateToken , conversationController.deleteConversation);
 
 export default router;

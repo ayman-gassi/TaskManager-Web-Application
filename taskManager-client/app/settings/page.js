@@ -12,6 +12,7 @@ export default function GeneralSettings() {
   const [selectedLanguage, setSelectedLanguage] = useState('English (Default)')
   const [selectedTimezone, setSelectedTimezone] = useState('UTC (Default)')
   const [showSuccess, setShowSuccess] = useState(false)
+  const [hasChanges, setHasChanges] = useState(false)
   
   const languageRef = useRef(null)
   const timezoneRef = useRef(null)
@@ -33,6 +34,7 @@ export default function GeneralSettings() {
   }, [])
 
   const handleSettingChange = (setting, value) => {
+    setHasChanges(true)
     switch (setting) {
       case 'theme':
         changeTheme(value)
@@ -40,14 +42,22 @@ export default function GeneralSettings() {
       case 'timeFormat':
         setTimeFormat(value)
         break
+      case 'language':
+        setSelectedLanguage(value)
+        break
+      case 'timezone':
+        setSelectedTimezone(value)
+        break
       default:
         break
     }
-    handleSave()
   }
 
   const handleSave = () => {
+    if (!hasChanges) return
+    
     setShowSuccess(true)
+    setHasChanges(false)
     setTimeout(() => {
       setShowSuccess(false)
     }, 3000)
@@ -83,6 +93,7 @@ export default function GeneralSettings() {
                   onClick={() => {
                     setSelectedLanguage('English (Default)')
                     setShowLanguage(false)
+                    setHasChanges(true)
                   }}
                   className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
@@ -92,6 +103,7 @@ export default function GeneralSettings() {
                   onClick={() => {
                     setSelectedLanguage('Spanish')
                     setShowLanguage(false)
+                    setHasChanges(true)
                   }}
                   className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
@@ -101,6 +113,7 @@ export default function GeneralSettings() {
                   onClick={() => {
                     setSelectedLanguage('French')
                     setShowLanguage(false)
+                    setHasChanges(true)
                   }}
                   className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
@@ -138,6 +151,7 @@ export default function GeneralSettings() {
                   onClick={() => {
                     setSelectedTimezone('UTC (Default)')
                     setShowTimezone(false)
+                    setHasChanges(true)
                   }}
                   className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
@@ -147,6 +161,7 @@ export default function GeneralSettings() {
                   onClick={() => {
                     setSelectedTimezone('EST (UTC-5)')
                     setShowTimezone(false)
+                    setHasChanges(true)
                   }}
                   className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
@@ -156,6 +171,7 @@ export default function GeneralSettings() {
                   onClick={() => {
                     setSelectedTimezone('PST (UTC-8)')
                     setShowTimezone(false)
+                    setHasChanges(true)
                   }}
                   className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
@@ -165,6 +181,7 @@ export default function GeneralSettings() {
                   onClick={() => {
                     setSelectedTimezone('CET (UTC+1)')
                     setShowTimezone(false)
+                    setHasChanges(true)
                   }}
                   className="w-full px-4 py-2 text-left text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                 >
@@ -230,7 +247,10 @@ export default function GeneralSettings() {
         <div className="pt-4">
           <button 
             onClick={handleSave}
-            className="h-11 px-5 bg-blue-600 text-white text-[15px] font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+            disabled={!hasChanges}
+            className={`h-11 px-5 bg-blue-600 text-white text-[15px] font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors ${
+              !hasChanges ? 'cursor-not-allowed opacity-50' : ''
+            }`}
           >
             Save Changes
           </button>

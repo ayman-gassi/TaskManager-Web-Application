@@ -1,0 +1,14 @@
+[
+    {
+        "title": "How to create a task?",
+        "description": "To create a task, click on the 'Add Task' button and fill in the required details."
+    },
+    {
+        "title": "How to delete a task?",
+        "description": "To delete a task, click on the 'Delete' button next to the task you want to remove."
+    },
+    {
+        "title": "How to edit a task?",
+        "description": "To edit a task, click on the 'Edit' button next to the task you want to modify."
+    }
+]

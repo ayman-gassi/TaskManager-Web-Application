@@ -4,10 +4,18 @@ import Link from 'next/link'
 import { FiUser, FiHelpCircle, FiCheckCircle, FiLogOut } from 'react-icons/fi'
 import { useRouter } from 'next/navigation'
 import { useEffect, useRef } from 'react'
+import Cookies from 'js-cookie'
+import toast from 'react-hot-toast'
+import { useUser } from '@/app/_context/UserContext'
+import Image from 'next/image'
 
 export default function ProfileDropdown({ isOpen, onClose }) {
   const router = useRouter()
   const dropdownRef = useRef(null)
+  const { userName, userEmail, profileImage, userJob } = useUser()
+  const userHandle = userName 
+    ? `@${userName.toLowerCase().replace(/\s+/g, '')}`
+    : '@user'
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -28,8 +36,26 @@ export default function ProfileDropdown({ isOpen, onClose }) {
   if (!isOpen) return null
 
   const handleLogout = () => {
-    // Add your logout logic here
-    router.push('/')
+    try {
+      // Clear all authentication data
+      localStorage.removeItem('token')
+      localStorage.removeItem('userName')
+      localStorage.removeItem('userEmail')
+      localStorage.removeItem('userJob')
+      Cookies.remove('token')
+      
+      // Close the dropdown
+      onClose()
+      
+      // Show success message
+      toast.success('Logged out successfully')
+      
+      // Redirect to login page
+      router.replace('/auth/login')
+    } catch (error) {
+      console.error('Logout error:', error)
+      toast.error('Error logging out')
+    }
   }
 
   const menuItems = [
@@ -53,14 +79,33 @@ export default function ProfileDropdown({ isOpen, onClose }) {
       >
         <div className="px-6 py-4 border-b border-gray-100/60">
           <div className="flex items-center space-x-4">
-            <img
-              src="/images/ayman-wa3r.jpg"
-              alt="Profile"
-              className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 shadow-sm hover:border-blue-400 transition-colors duration-200"
-            />
-            <div>
-              <p className="text-lg font-semibold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">Ayman</p>
-              <p className="text-sm text-gray-500">@ayman_wa3r</p>
+            <div className="w-16 h-16 rounded-full bg-blue-600 flex items-center justify-center text-white text-2xl font-medium overflow-hidden">
+              {profileImage ? (
+                <Image
+                  src={`http://localhost:9000${profileImage}`}
+                  alt="Profile"
+                  width={64}
+                  height={64}
+                  className="object-cover w-full h-full"
+                />
+              ) : userName ? (
+                userName.charAt(0).toUpperCase()
+              ) : (
+                <FiUser className="h-8 w-8" />
+              )}
+            </div>
+            <div className="flex-1">
+              <p className="text-lg font-semibold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+                {userName || 'User'}
+              </p>
+              <p className="text-sm text-gray-500 mb-1">{userHandle}</p>
+              {userJob && (
+                <div className="flex items-center">
+                  <span className="px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-600 rounded-full">
+                    {userJob}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -2,36 +2,150 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import { 
-  FiEdit2, FiGithub, FiLinkedin, FiTwitter, FiClock, FiCheckCircle, 
-  FiAlertCircle, FiBarChart2, FiPlus, FiTrash2, FiInstagram, 
-  FiFacebook, FiYoutube, FiSave, FiX, FiLink, FiActivity,
+  FiEdit2, FiClock, FiCheckCircle, 
+  FiAlertCircle, FiBarChart2, FiPlus, FiTrash2,
   FiCheck, FiTrash, FiEdit3, FiCalendar, FiFlag, FiUser, FiPhone, FiMail,
-  FiUsers, FiFolder, FiStar, FiArchive, FiChevronDown, FiFilter, FiSettings, FiCheckSquare, FiList, FiMapPin, FiPieChart, FiTrendingUp
+  FiFolder, FiStar, FiChevronDown, FiFilter, FiSettings, FiCheckSquare, FiList, FiMapPin, FiPieChart, FiTrendingUp,
+  FiActivity, FiX, FiSave, FiAward, FiChevronRight, FiBriefcase, FiCommand, FiGrid
 } from 'react-icons/fi'
+import { useUser } from '@/app/_context/UserContext'
 import ActivityModal from './ActivityModal'
 import ProfileInfoModal from './ProfileInfoModal'
 import CategoryModal from './CategoryModal'
+import SkillModal from './SkillModal'
 import HistorySection from './HistorySection'
+import SuccessAlert from '../Notifications/SuccessAlert'
+import AboutModal from './AboutModal'
+import DeleteAccountModal from './DeleteAccountModal'
+import axios from 'axios'
+import Cookies from 'js-cookie'
 
 export default function ProfileBody() {
+  const { userName, userEmail, userJob, userPhone, userLanguages, userLocation, userAbout, updateUserAbout, userSkills, updateUserSkills, deleteAccount } = useUser()
   const [activeTab, setActiveTab] = useState('overview')
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false)
   const [isEditingAbout, setIsEditingAbout] = useState(false)
-  const [newLink, setNewLink] = useState({ platform: '', url: '' })
+  const [editedDescription, setEditedDescription] = useState(userAbout || '')
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
+  const [showAlert, setShowAlert] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
+  const [alertType, setAlertType] = useState('error')
+  const [isSkillsLoading, setIsSkillsLoading] = useState(true)
+  const [isAboutLoading, setIsAboutLoading] = useState(true)
+  const [isSkillModalOpen, setIsSkillModalOpen] = useState(false)
+  const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false)
+
+  // Update editedDescription when userAbout changes
+  useEffect(() => {
+    setEditedDescription(userAbout || '')
+    setIsAboutLoading(false)
+  }, [userAbout])
+
+  useEffect(() => {
+    if (userSkills) {
+      setIsSkillsLoading(false)
+    }
+  }, [userSkills])
+
   const [profileInfo, setProfileInfo] = useState({
-    fullName: 'John Doe',
-    country: 'USA',
-    languages: 'English',
-    phone: '(123) 456-7890',
-    email: 'john.doe@example.com'
+    fullName: userName || 'John Doe',
+    country: userLocation || 'Casablanca, Morocco',
+    languages: userLanguages || 'none',
+    phone: userPhone || 'none',
+    email: userEmail || 'john.doe@example.com'
   })
-  const [description, setDescription] = useState(
-    "Full-stack developer with expertise in React and Node.js. Passionate about building scalable web applications and exploring new technologies."
-  )
-  const [editedDescription, setEditedDescription] = useState(description)
-  const [skills, setSkills] = useState(['React', 'Node.js', 'TypeScript', 'Next.js', 'TailwindCSS'])
+  const [newLink, setNewLink] = useState({ platform: '', url: '' })
   const [newSkill, setNewSkill] = useState('')
   const [isAddingSkill, setIsAddingSkill] = useState(false)
+  const [error, setError] = useState(null)
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  const validateSkill = (skill) => {
+    // Check if skill already exists
+    if (userSkills.includes(skill.trim())) {
+      setAlertMessage('This skill already exists')
+      setAlertType('error')
+      setShowAlert(true)
+      setTimeout(() => setShowAlert(false), 3000)
+      return false
+    }
+
+    // Check skill length (max 20 characters)
+    if (skill.trim().length > 20) {
+      setAlertMessage('Skill name must be less than 20 characters')
+      setAlertType('error')
+      setShowAlert(true)
+      setTimeout(() => setShowAlert(false), 3000)
+      return false
+    }
+
+    return true
+  }
+
+  const handleAddSkill = async () => {
+    const trimmedSkill = newSkill.trim()
+    if (!trimmedSkill) return
+
+    if (!validateSkill(trimmedSkill)) {
+      setNewSkill('')
+      return
+    }
+
+    try {
+      const token = Cookies.get('token')
+      if (!token) {
+        throw new Error('Authentication required')
+      }
+
+      // Update skills in the database
+      const response = await axios.put(
+        'http://localhost:9000/api/users/profile',
+        {
+          skills: [...userSkills, trimmedSkill],
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+
+      if (response.data.state) {
+        updateUserSkills([...userSkills, trimmedSkill])
+        setNewSkill('')
+        addActivity('update', 'Skills', `Added ${trimmedSkill} to skills`)
+        setShowSuccess(true)
+        setTimeout(() => {
+          setShowSuccess(false)
+        }, 3000)
+      }
+    } catch (error) {
+      console.error('Error updating skills:', error)
+    }
+  }
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddSkill()
+    }
+  }
+
+  const handleRemoveSkill = async (skillToRemove) => {
+    try {
+      const updatedSkills = userSkills.filter(skill => skill !== skillToRemove)
+      await updateUserSkills(updatedSkills)
+      addActivity('update', 'Skills', `Removed ${skillToRemove} from skills`)
+      setShowSuccess(true)
+      setTimeout(() => {
+        setShowSuccess(false)
+      }, 3000)
+    } catch (error) {
+      console.error('Failed to remove skill:', error)
+      setError(error.message || 'Failed to remove skill')
+    }
+  }
 
   const [tasks, setTasks] = useState([
     {
@@ -60,38 +174,9 @@ export default function ProfileBody() {
     }
   ])
 
-  const [socialLinks, setSocialLinks] = useState([])
-  const [isAddingLink, setIsAddingLink] = useState(false)
-  const [editingId, setEditingId] = useState(null)
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
-  const [connectedAccounts, setConnectedAccounts] = useState([
-    {
-      platform: 'github',
-      username: 'johndoe',
-      connected: true
-    },
-    {
-      platform: 'linkedin',
-      username: 'john.doe',
-      connected: true
-    },
-    {
-      platform: 'twitter',
-      username: '@johndoe',
-      connected: true
-    }
-  ])
 
-  const availablePlatforms = [
-    { name: 'GitHub', icon: FiGithub },
-    { name: 'LinkedIn', icon: FiLinkedin },
-    { name: 'Twitter', icon: FiTwitter },
-    { name: 'Instagram', icon: FiInstagram },
-    { name: 'Facebook', icon: FiFacebook },
-    { name: 'YouTube', icon: FiYoutube }
-  ]
-
-  const activities = [
+  const [activities, setActivities] = useState([
     {
       id: 1,
       type: 'complete',
@@ -135,7 +220,7 @@ export default function ProfileBody() {
       icon: FiCalendar,
       color: 'text-indigo-500'
     }
-  ]
+  ])
 
   const [activeTimeFilter, setActiveTimeFilter] = useState('today')
 
@@ -143,18 +228,6 @@ export default function ProfileBody() {
     activityNotifications: false,
     taskUpdates: false,
     weeklySummary: false
-  })
-
-  const [privacySettings, setPrivacySettings] = useState({
-    isPublic: false,
-    showActivity: false,
-    showTasks: false
-  })
-
-  const [themeSettings, setThemeSettings] = useState({
-    currentTheme: 'blue',
-    darkMode: false,
-    compactView: false
   })
 
   const [categoryStats] = useState({
@@ -166,8 +239,6 @@ export default function ProfileBody() {
   })
 
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
-
-  const [isPlatformDropdownOpen, setIsPlatformDropdownOpen] = useState(false)
 
   const platformDropdownRef = useRef(null)
 
@@ -183,25 +254,58 @@ export default function ProfileBody() {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
-  const handleSaveDescription = () => {
-    setIsEditingAbout(false)
-    setDescription(editedDescription)
-    // Add to activity feed
-    addActivity('update', 'Profile Description', 'Updated about section')
-  }
+  useEffect(() => {
+    setProfileInfo(prev => ({
+      ...prev,
+      fullName: userName || '',
+      country: userLocation || '',
+      languages: userLanguages || '',
+      phone: userPhone || '',
+      email: userEmail || ''
+    }))
+  }, [userName, userEmail, userPhone, userLanguages, userLocation])
 
-  const handleAddSkill = () => {
-    if (newSkill && !skills.includes(newSkill)) {
-      setSkills([...skills, newSkill])
-      setNewSkill('')
-      setIsAddingSkill(false)
-      addActivity('update', 'Skills', `Added ${newSkill} to skills`)
+  const handleSaveDescription = async () => {
+    try {
+      const token = Cookies.get('token')
+      if (!token) {
+        throw new Error('Authentication required')
+      }
+
+      // Update user info in the database
+      const response = await axios.put('http://localhost:9000/api/users/profile', {
+        about: editedDescription.trim() || 'No description provided'
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      })
+
+      if (response.data.state) {
+        setIsEditingAbout(false)
+        updateUserAbout(editedDescription)
+        // Add to activity feed
+        addActivity('update', 'Profile Description', 'Updated about section')
+        // Show success message
+        setAlertType('success')
+        setAlertMessage('Profile updated successfully!')
+        setShowAlert(true)
+        setTimeout(() => setShowAlert(false), 3000)
+      } else {
+        throw new Error(response.data.message)
+      }
+    } catch (err) {
+      console.error('About update error:', err)
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        setError('Please login again to update your profile')
+        // Clear invalid token
+        Cookies.remove('token')
+        localStorage.removeItem('token')
+      } else {
+        setError(err.response?.data?.message || err.message || 'Failed to update about section')
+      }
     }
-  }
-
-  const handleRemoveSkill = (skillToRemove) => {
-    setSkills(skills.filter(skill => skill !== skillToRemove))
-    addActivity('update', 'Skills', `Removed ${skillToRemove} from skills`)
   }
 
   const addActivity = (type, taskTitle, details = '') => {
@@ -227,58 +331,14 @@ export default function ProfileBody() {
     activities.unshift(newActivity)
   }
 
-  const handleAddLink = () => {
-    if (newLink.platform && newLink.url) {
-      const platform = availablePlatforms.find(p => p.name.toLowerCase() === newLink.platform.toLowerCase())
-      if (platform) {
-        setSocialLinks([
-          ...socialLinks,
-          {
-            id: Date.now(),
-            platform: newLink.platform.toLowerCase(),
-            url: newLink.url,
-            icon: platform.icon
-          }
-        ])
-        setNewLink({ platform: '', url: '' })
-        setIsAddingLink(false)
-        addActivity('create', 'Social Link')
-      }
-    }
-  }
-
-  const handleDeleteLink = (id) => {
-    setSocialLinks(socialLinks.filter(link => link.id !== id))
-    addActivity('delete', 'Social Link')
-  }
-
-  const handleEditLink = (id) => {
-    setEditingId(id)
-    const link = socialLinks.find(l => l.id === id)
-    setNewLink({ platform: link.platform, url: link.url })
-  }
-
-  const handleUpdateLink = (id) => {
-    setSocialLinks(socialLinks.map(link => {
-      if (link.id === id) {
-        const platform = availablePlatforms.find(p => p.name.toLowerCase() === newLink.platform.toLowerCase())
-        return {
-          ...link,
-          platform: newLink.platform.toLowerCase(),
-          url: newLink.url,
-          icon: platform?.icon || link.icon
-        }
-      }
-      return link
-    }))
-    setEditingId(null)
-    setNewLink({ platform: '', url: '' })
-    addActivity('update', 'Social Link')
-  }
-
   const handleSaveProfileInfo = (newInfo) => {
     setProfileInfo(newInfo)
     addActivity('update', 'Profile Information', 'Updated profile information')
+    setShowSuccess(true)
+    // Auto-hide success message after 3 seconds
+    setTimeout(() => {
+      setShowSuccess(false)
+    }, 3000)
   }
 
   const formatTimestamp = (timestamp) => {
@@ -368,36 +428,72 @@ export default function ProfileBody() {
     }
   }
 
-  const getPlatformColor = (platform) => {
-    const colors = {
-      github: 'bg-gray-100 text-gray-600',
-      linkedin: 'bg-blue-100 text-blue-600',
-      twitter: 'bg-sky-100 text-sky-600',
-      instagram: 'bg-pink-100 text-pink-600',
-      facebook: 'bg-indigo-100 text-indigo-600',
-      youtube: 'bg-red-100 text-red-600'
-    }
-    return colors[platform] || 'bg-gray-100 text-gray-600'
+  const handleEmailPreference = (key) => {
+    setEmailPreferences(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }))
   }
 
-  const getPlatformIcon = (platform) => {
-    const icons = {
-      github: <FiGithub className="w-5 h-5" />,
-      linkedin: <FiLinkedin className="w-5 h-5" />,
-      twitter: <FiTwitter className="w-5 h-5" />,
-      instagram: <FiInstagram className="w-5 h-5" />,
-      facebook: <FiFacebook className="w-5 h-5" />,
-      youtube: <FiYoutube className="w-5 h-5" />
+  const handleExportData = async () => {
+    try {
+      const token = Cookies.get('token');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      // Call the export endpoint
+      const response = await axios({
+        method: 'GET',
+        url: 'http://localhost:9000/api/users/export-data',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob', // Important for downloading files
+      });
+
+      // Create a blob from the response data
+      const blob = new Blob([response.data], { type: 'application/json' });
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'user_data.json';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(link);
+
+      // Show success message with success style
+      setAlertType('success');
+      setAlertMessage('Data exported successfully!');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+    } catch (error) {
+      console.error('Error exporting data:', error);
+      setAlertType('error');
+      setAlertMessage('Failed to export data. Please try again.');
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
     }
-    return icons[platform] || <FiLink className="w-5 h-5" />
   }
 
-  const handleDisconnectAccount = (platform) => {
-    setConnectedAccounts(connectedAccounts.map(account => 
-      account.platform === platform 
-        ? { ...account, connected: false }
-        : account
-    ))
+  const handleDeleteAccount = async () => {
+    try {
+      await deleteAccount()
+      setIsDeleteAccountModalOpen(false)
+      setAlertType('success')
+      setAlertMessage('Account deleted successfully')
+      setShowAlert(true)
+    } catch (error) {
+      console.error('Error deleting account:', error)
+      setAlertType('error')
+      setAlertMessage('Failed to delete account. Please try again.')
+      setShowAlert(true)
+    }
   }
 
   const taskStats = {
@@ -417,9 +513,7 @@ export default function ProfileBody() {
     { id: 'history', label: 'History', icon: FiClock },
     { id: 'tasks', label: 'Tasks', icon: FiCheckSquare },
     { id: 'favorites', label: 'Favorites', icon: FiStar },
-    { id: 'archived', label: 'Archived', icon: FiArchive },
     { id: 'activity', label: 'Activity', icon: FiActivity },
-    { id: 'social', label: 'Social', icon: FiUsers },
     { id: 'settings', label: 'Settings', icon: FiSettings }
   ]
 
@@ -437,54 +531,71 @@ export default function ProfileBody() {
     if (isEditingAbout) {
       autoResizeTextarea()
     }
-  }, [description, isEditingAbout])
+  }, [isEditingAbout])
 
-  const handleEmailPreference = (key) => {
-    setEmailPreferences(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }))
-  }
+  const [isEditingSkills, setIsEditingSkills] = useState(false)
 
-  const handlePrivacySetting = (key) => {
-    setPrivacySettings(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }))
-  }
+  const handleUpdateSkills = async (newSkills) => {
+    try {
+      const token = Cookies.get('token')
+      if (!token) {
+        throw new Error('Authentication required')
+      }
 
-  const handleThemeChange = (theme) => {
-    setThemeSettings(prev => ({
-      ...prev,
-      currentTheme: theme
-    }))
-  }
+      // Update skills in the database
+      const response = await axios.put(
+        'http://localhost:9000/api/users/profile',
+        {
+          skills: newSkills,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
 
-  const handleDisplaySetting = (key) => {
-    setThemeSettings(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }))
-  }
-
-  const handleExportData = () => {
-    // Implement export functionality
-    alert('Exporting your data...')
-  }
-
-  const handleDeleteAccount = () => {
-    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      // Implement delete account functionality
-      alert('Account deletion initiated...')
+      if (response.data.state) {
+        updateUserSkills(newSkills)
+        setShowSuccess(true)
+        setTimeout(() => {
+          setShowSuccess(false)
+        }, 3000)
+        setIsSkillModalOpen(false)
+      }
+    } catch (error) {
+      console.error('Error updating skills:', error)
+      setError(error.message || 'Failed to update skills')
     }
   }
 
   return (
     <>
+      <SuccessAlert 
+        message="Profile updated successfully!" 
+        isVisible={showSuccess} 
+        onClose={() => setShowSuccess(false)} 
+      />
+      {/* Alert Notification */}
+      {showAlert && (
+        <div className={`fixed top-4 right-4 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg animate-slide-in ${
+          alertType === 'success' 
+            ? 'bg-green-50 text-green-600' 
+            : 'bg-red-50 text-red-600'
+        }`}>
+          {alertType === 'success' ? (
+            <FiCheckCircle className="w-5 h-5" />
+          ) : (
+            <FiAlertCircle className="w-5 h-5" />
+          )}
+          <span className="text-sm font-medium">{alertMessage}</span>
+        </div>
+      )}
       {/* Main Navigation */}
       <div className="bg-white shadow-sm mb-6 border-b">
-        <div className="max-w-7xl mx-auto">
-          <nav className="flex space-x-8" aria-label="Profile Navigation">
+        <div className="max-w-7xl mx-auto px-4">
+          <nav className="flex justify-center space-x-8" aria-label="Profile Navigation">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -510,8 +621,8 @@ export default function ProfileBody() {
             {/* Profile Info Column */}
             <div className="col-span-12 lg:col-span-4">
               {/* Profile Info Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6 h-[calc(100vh-13rem)]">
-                <div className="flex items-center justify-between mb-6">
+              <div className="bg-white rounded-lg shadow-sm p-6 max-h-[calc(340vh-13rem)] max-w-full min-h-[calc(113vh-13rem)] min-w-full">
+                <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-green-50 rounded-full">
                       <FiUser className="w-4 h-4 text-green-600" />
@@ -527,33 +638,48 @@ export default function ProfileBody() {
                   </button>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-8">
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">Full Name</h3>
-                    <p className="mt-1 text-sm text-gray-900">{profileInfo.fullName}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Country</h3>
-                    <p className="mt-1 text-sm text-gray-900">{profileInfo.country}</p>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Languages</h3>
-                    <p className="mt-1 text-sm text-gray-900">{profileInfo.languages}</p>
-                  </div>
-                  <div className="pt-4 border-t border-gray-100">
-                    <h3 className="text-sm font-medium text-gray-900 mb-3">Contacts</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gray-50 rounded-full">
-                          <FiPhone className="w-4 h-4 text-gray-400" />
-                        </div>
-                        <p className="text-sm text-gray-600">{profileInfo.phone}</p>
+                    <h3 className="text-base font-medium text-gray-500 mb-3">Full Name</h3>
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-gray-50 rounded-full">
+                        <FiUser className="w-5 h-5 text-gray-400" />
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gray-50 rounded-full">
-                          <FiMail className="w-4 h-4 text-gray-400" />
+                      <p className="text-base text-gray-900">{profileInfo.fullName}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-medium text-gray-500 mb-3">Country</h3>
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-gray-50 rounded-full">
+                        <FiMapPin className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <p className="text-base text-gray-900">{profileInfo.country}</p>
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-medium text-gray-500 mb-3">Languages</h3>
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 bg-gray-50 rounded-full">
+                        <FiCommand className="w-5 h-5 text-gray-400" />
+                      </div>
+                      <p className="text-base text-gray-900">{profileInfo.languages}</p>
+                    </div>
+                  </div>
+                  <div className="pt-8 border-t border-gray-100">
+                    <h3 className="text-base font-medium text-gray-900 mb-6">Contacts</h3>
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-gray-50 rounded-full">
+                          <FiPhone className="w-5 h-5 text-gray-400" />
                         </div>
-                        <p className="text-sm text-gray-600">{profileInfo.email}</p>
+                        <p className="text-base text-gray-600">{profileInfo.phone}</p>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <div className="p-3 bg-gray-50 rounded-full">
+                          <FiMail className="w-5 h-5 text-gray-400" />
+                        </div>
+                        <p className="text-base text-gray-600">{profileInfo.email}</p>
                       </div>
                     </div>
                   </div>
@@ -564,7 +690,7 @@ export default function ProfileBody() {
             {/* Skills and About Column */}
             <div className="col-span-12 lg:col-span-8 space-y-6">
               {/* About Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6 min-h-[calc(50vh-8rem)]">
+              <div className="bg-white rounded-lg shadow-sm p-6 min-h-[calc(65vh-8rem)] max-h-[calc(100vh-8rem)] max-w-full">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-purple-50 rounded-full">
@@ -582,11 +708,16 @@ export default function ProfileBody() {
 
                 {isEditingAbout ? (
                   <div className="space-y-6">
+                    {error && (
+                      <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg">
+                        {error}
+                      </div>
+                    )}
                     <textarea
                       ref={textareaRef}
-                      value={description}
+                      value={editedDescription}
                       onChange={(e) => {
-                        setDescription(e.target.value)
+                        setEditedDescription(e.target.value)
                         autoResizeTextarea()
                       }}
                       className="w-full px-4 py-3 text-base text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent min-h-[120px] overflow-hidden resize-none"
@@ -603,14 +734,31 @@ export default function ProfileBody() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {description}
-                  </p>
+                  <div className="text-sm text-gray-600 leading-relaxed break-words whitespace-pre-wrap max-w-full">
+                    {isAboutLoading ? (
+                      <div className="animate-pulse">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                        <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                      </div>
+                    ) : editedDescription.trim() ? (
+                      <p className="text-gray-600 whitespace-pre-wrap">{editedDescription}</p>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-8">
+                        <div className="p-3 bg-purple-50 rounded-full mb-3">
+                          <FiCommand className="w-5 h-5 text-purple-500" />
+                        </div>
+                        <div className="text-center">
+                          <h3 className="text-base font-medium text-gray-900 mb-1">No Description Added</h3>
+                          <p className="text-sm text-gray-500">Click the "Edit" button to add your description</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 
               {/* Skills Card */}
-              <div className="bg-white rounded-lg shadow-sm p-6 h-[calc(50vh-8rem)]">
+              <div className="bg-white rounded-lg shadow-sm p-6 min-h-[calc(65vh-8rem)] max-h-[calc(100vh-8rem)] max-w-full">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-blue-50 rounded-full">
@@ -632,6 +780,7 @@ export default function ProfileBody() {
                       type="text"
                       value={newSkill}
                       onChange={(e) => setNewSkill(e.target.value)}
+                      onKeyDown={handleKeyDown}
                       placeholder="Add a skill..."
                       className="flex-1 px-3 py-2 text-sm text-gray-700 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
@@ -645,24 +794,64 @@ export default function ProfileBody() {
                   </div>
                 )}
 
-                <div className="flex flex-wrap gap-2">
-                  {skills.map((skill) => (
-                    <motion.span
-                      key={skill}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      className="inline-flex items-center gap-1 px-3 py-1 text-sm font-medium text-blue-600 bg-blue-50 rounded-full group hover:bg-blue-100 transition-colors"
-                    >
-                      {skill}
-                      <button
-                        onClick={() => handleRemoveSkill(skill)}
-                        className="w-4 h-4 rounded-full text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <FiX className="w-3 h-3" />
-                      </button>
-                    </motion.span>
-                  ))}
+                <div className="relative h-[120px] w-full overflow-hidden">
+                  {isSkillsLoading ? (
+                    <div className="flex flex-wrap gap-2">
+                      {[1, 2, 3].map((i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="h-10 w-24 bg-gray-200 rounded-full"></div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto scrollbar-hide hover:scrollbar-default transition-all pr-2">
+                      {userSkills.length > 0 ? (
+                        <>
+                          {userSkills.slice(0, 5).map((skill, index) => (
+                            <motion.span
+                              key={skill}
+                              initial={isAddingSkill ? { scale: 0 } : false}
+                              animate={isAddingSkill ? { scale: 1 } : false}
+                              exit={isAddingSkill ? { scale: 0 } : false}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 text-base bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors shrink-0"
+                            >
+                              {skill}
+                              <button
+                                onClick={() => handleRemoveSkill(skill)}
+                                className="p-1 hover:bg-blue-200 rounded-full"
+                              >
+                                <FiX className="w-3.5 h-3.5" />
+                              </button>
+                            </motion.span>
+                          ))}
+                          {userSkills.length > 5 && (
+                            <button
+                              onClick={() => setIsSkillModalOpen(true)}
+                              className="inline-flex items-center gap-2 px-4 py-2 text-base font-medium bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-full hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-sm hover:shadow group shrink-0"
+                            >
+                              <span className="flex items-center gap-1.5">
+                                <span className="bg-white bg-opacity-20 px-2 py-0.5 rounded-full text-sm">
+                                  +{userSkills.length - 5}
+                                </span>
+                                <span className="hidden sm:inline">more skills</span>
+                              </span>
+                              <FiChevronRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-200" />
+                            </button>
+                          )}
+                        </>
+                      ) : (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center h-[120px]">
+                          <div className="p-3 bg-blue-50 rounded-full mb-3">
+                            <FiAward className="w-5 h-5 text-blue-500" />
+                          </div>
+                          <div className="text-center">
+                            <h3 className="text-base font-medium text-gray-900 mb-1">No Skills Added</h3>
+                            <p className="text-sm text-gray-500">Click the "Add Skills" button to get started</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -900,7 +1089,7 @@ export default function ProfileBody() {
                 {tasks.slice(0, 3).map((task) => (
                   <div
                     key={task.id}
-                    className="group relative bg-white border border-gray-100 rounded-xl p-4 hover:border-indigo-200 transition-all duration-300"
+                    className="group relative bg-white border border-gray-100 rounded-xl p-4 hover:border-indigo-200 transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -1020,219 +1209,12 @@ export default function ProfileBody() {
           </div>
         )}
 
-        {activeTab === 'social' && (
-          <div className="max-w-5xl mx-auto">
-            <div className="grid grid-cols-2 gap-6">
-              {/* Social Links Section */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-purple-50 rounded-full">
-                      <FiLink className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <h2 className="text-lg font-semibold text-gray-900">Social Links</h2>
-                  </div>
-                  {!isAddingLink && (
-                    <button
-                      onClick={() => setIsAddingLink(true)}
-                      className="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                    >
-                      Add Link
-                    </button>
-                  )}
-                </div>
-
-                {/* Add Link Form */}
-                {isAddingLink && (
-                  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-sm font-medium text-gray-900">Add New Link</h3>
-                      <button
-                        onClick={() => setIsAddingLink(false)}
-                        className="p-1 text-gray-400 hover:text-gray-500"
-                      >
-                        <FiX className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Platform
-                        </label>
-                        <div className="relative" ref={platformDropdownRef}>
-                          <button
-                            type="button"
-                            onClick={() => setIsPlatformDropdownOpen(!isPlatformDropdownOpen)}
-                            className="w-full px-3 py-2 text-left border border-gray-200 rounded-lg bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                {newLink.platform ? (
-                                  <>
-                                    {getPlatformIcon(newLink.platform.toLowerCase())}
-                                    <span className="text-sm text-gray-900 capitalize">
-                                      {newLink.platform}
-                                    </span>
-                                  </>
-                                ) : (
-                                  <span className="text-sm text-gray-500">Select Platform</span>
-                                )}
-                              </div>
-                              <FiChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isPlatformDropdownOpen ? 'transform rotate-180' : ''}`} />
-                            </div>
-                          </button>
-                          {isPlatformDropdownOpen && (
-                            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
-                              <div className="py-1">
-                                {availablePlatforms.map((platform) => (
-                                  <button
-                                    key={platform.name}
-                                    onClick={() => {
-                                      setNewLink({ ...newLink, platform: platform.name });
-                                      setIsPlatformDropdownOpen(false);
-                                    }}
-                                    className="w-full px-3 py-2 text-left hover:bg-gray-50 flex items-center gap-2"
-                                  >
-                                    <platform.icon className="w-5 h-5" />
-                                    <span className="text-sm text-gray-900">{platform.name}</span>
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          URL
-                        </label>
-                        <input
-                          type="url"
-                          value={newLink.url}
-                          onChange={(e) =>
-                            setNewLink({ ...newLink, url: e.target.value })
-                          }
-                          placeholder="https://"
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                      </div>
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => setIsAddingLink(false)}
-                          className="px-4 py-2 text-sm text-gray-600 hover:text-gray-700"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          onClick={handleAddLink}
-                          className="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                        >
-                          Add Link
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Links List */}
-                <div className="space-y-4">
-                  {socialLinks.map((link, index) => (
-                    <div
-                      key={index}
-                      className="group flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-full ${getPlatformColor(link.platform)}`}>
-                          {getPlatformIcon(link.platform)}
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-medium text-gray-900 capitalize">
-                            {link.platform}
-                          </h3>
-                          <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-gray-500 hover:text-purple-600"
-                          >
-                            {link.url}
-                          </a>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-1 text-gray-400 hover:text-purple-600">
-                          <FiEdit3 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteLink(index)}
-                          className="p-1 text-gray-400 hover:text-red-600"
-                        >
-                          <FiTrash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-
-                  {socialLinks.length === 0 && !isAddingLink && (
-                    <div className="text-center py-6">
-                      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-4">
-                        <FiLink className="w-6 h-6 text-gray-400" />
-                      </div>
-                      <h3 className="text-sm font-medium text-gray-900 mb-1">No social links yet</h3>
-                      <p className="text-sm text-gray-500">Add your first social link</p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Connected Accounts Section */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-green-50 rounded-full">
-                      <FiUsers className="w-5 h-5 text-green-600" />
-                    </div>
-                    <h2 className="text-lg font-semibold text-gray-900">Connected Accounts</h2>
-                  </div>
-                </div>
-                
-                <div className="space-y-4">
-                  {connectedAccounts.map((account, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-full ${getPlatformColor(account.platform)}`}>
-                          {getPlatformIcon(account.platform)}
-                        </div>
-                        <div>
-                          <h3 className="text-sm font-medium text-gray-900 capitalize">
-                            {account.platform}
-                          </h3>
-                          <p className="text-sm text-gray-500">{account.username}</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => handleDisconnectAccount(account.platform)}
-                        className="px-4 py-2 text-sm text-red-600 hover:text-red-700"
-                      >
-                        Disconnect
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
         {activeTab === 'settings' && (
           <div className="max-w-4xl mx-auto">
             <div className="space-y-6">
               {/* Account Settings */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-6">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+                <div className="p-6 border-b border-gray-100">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-blue-50 rounded-full">
                       <FiUser className="w-4 h-4 text-blue-600" />
@@ -1240,166 +1222,119 @@ export default function ProfileBody() {
                     <h2 className="text-lg font-semibold text-gray-900">Account Settings</h2>
                   </div>
                 </div>
-                <div className="space-y-6">
+                
+                <div className="p-6">
                   {/* Email Preferences */}
                   <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-4">Email Preferences</h3>
-                    <div className="space-y-3">
-                      <label className="flex items-center gap-3">
-                        <input 
-                          type="checkbox" 
-                          checked={emailPreferences.activityNotifications}
-                          onChange={() => handleEmailPreference('activityNotifications')}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
-                        />
-                        <span className="text-sm text-gray-700">Receive activity notifications</span>
-                      </label>
-                      <label className="flex items-center gap-3">
-                        <input 
-                          type="checkbox" 
-                          checked={emailPreferences.taskUpdates}
-                          onChange={() => handleEmailPreference('taskUpdates')}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
-                        />
-                        <span className="text-sm text-gray-700">Receive task updates</span>
-                      </label>
-                      <label className="flex items-center gap-3">
-                        <input 
-                          type="checkbox" 
-                          checked={emailPreferences.weeklySummary}
-                          onChange={() => handleEmailPreference('weeklySummary')}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
-                        />
-                        <span className="text-sm text-gray-700">Receive weekly summary</span>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Privacy Settings */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-4">Privacy Settings</h3>
-                    <div className="space-y-3">
-                      <label className="flex items-center gap-3">
-                        <input 
-                          type="checkbox" 
-                          checked={privacySettings.isPublic}
-                          onChange={() => handlePrivacySetting('isPublic')}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
-                        />
-                        <span className="text-sm text-gray-700">Make profile public</span>
-                      </label>
-                      <label className="flex items-center gap-3">
-                        <input 
-                          type="checkbox" 
-                          checked={privacySettings.showActivity}
-                          onChange={() => handlePrivacySetting('showActivity')}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
-                        />
-                        <span className="text-sm text-gray-700">Show activity status</span>
-                      </label>
-                      <label className="flex items-center gap-3">
-                        <input 
-                          type="checkbox" 
-                          checked={privacySettings.showTasks}
-                          onChange={() => handlePrivacySetting('showTasks')}
-                          className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" 
-                        />
-                        <span className="text-sm text-gray-700">Allow others to see my tasks</span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Theme Settings */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-2">
-                    <div className="p-2 bg-purple-50 rounded-full">
-                      <FiSettings className="w-4 h-4 text-purple-600" />
-                    </div>
-                    <h2 className="text-lg font-semibold text-gray-900">Theme Settings</h2>
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  {/* Theme Selection */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-4">Theme</h3>
-                    <div className="grid grid-cols-3 gap-4">
-                      <button 
-                        onClick={() => handleThemeChange('blue')}
-                        className={`p-4 border-2 ${themeSettings.currentTheme === 'blue' ? 'border-blue-600 bg-blue-50' : 'border-gray-200'} rounded-lg text-center hover:border-blue-600`}
-                      >
-                        <span className="block w-full h-2 bg-blue-600 rounded mb-2"></span>
-                        <span className="text-sm font-medium text-gray-900">Blue</span>
-                      </button>
-                      <button 
-                        onClick={() => handleThemeChange('purple')}
-                        className={`p-4 border-2 ${themeSettings.currentTheme === 'purple' ? 'border-purple-600 bg-purple-50' : 'border-gray-200'} rounded-lg text-center hover:border-purple-600`}
-                      >
-                        <span className="block w-full h-2 bg-purple-600 rounded mb-2"></span>
-                        <span className="text-sm font-medium text-gray-900">Purple</span>
-                      </button>
-                      <button 
-                        onClick={() => handleThemeChange('green')}
-                        className={`p-4 border-2 ${themeSettings.currentTheme === 'green' ? 'border-green-600 bg-green-50' : 'border-gray-200'} rounded-lg text-center hover:border-green-600`}
-                      >
-                        <span className="block w-full h-2 bg-green-600 rounded mb-2"></span>
-                        <span className="text-sm font-medium text-gray-900">Green</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Display Settings */}
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900 mb-4">Display</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700">Dark Mode</span>
-                        <button 
-                          onClick={() => handleDisplaySetting('darkMode')}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full ${themeSettings.darkMode ? 'bg-blue-600' : 'bg-gray-200'}`}
-                        >
-                          <span className={`${themeSettings.darkMode ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`}></span>
-                        </button>
+                    <div className="flex items-center justify-between mb-6">
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-900">Email Preferences</h3>
+                        <p className="text-sm text-gray-500">Manage your email notification settings</p>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-700">Compact View</span>
-                        <button 
-                          onClick={() => handleDisplaySetting('compactView')}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full ${themeSettings.compactView ? 'bg-blue-600' : 'bg-gray-200'}`}
-                        >
-                          <span className={`${themeSettings.compactView ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ease-in-out`}></span>
-                        </button>
+                    </div>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-white rounded-full">
+                            <FiActivity className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-900">Activity Notifications</label>
+                            <p className="text-sm text-gray-500">Get notified about your account activity</p>
+                          </div>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={emailPreferences.activityNotifications}
+                            onChange={() => handleEmailPreference('activityNotifications')}
+                            className="sr-only peer" 
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                      </div>
+
+                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-white rounded-full">
+                            <FiCheckSquare className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-900">Task Updates</label>
+                            <p className="text-sm text-gray-500">Receive updates about your tasks</p>
+                          </div>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={emailPreferences.taskUpdates}
+                            onChange={() => handleEmailPreference('taskUpdates')}
+                            className="sr-only peer" 
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
+                      </div>
+
+                      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 bg-white rounded-full">
+                            <FiClock className="w-4 h-4 text-blue-600" />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-gray-900">Weekly Summary</label>
+                            <p className="text-sm text-gray-500">Get a weekly summary of your activity</p>
+                          </div>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={emailPreferences.weeklySummary}
+                            onChange={() => handleEmailPreference('weeklySummary')}
+                            className="sr-only peer" 
+                          />
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-100 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                        </label>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Account Actions */}
+              {/* Danger Zone */}
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
                     <div className="p-2 bg-red-50 rounded-full">
                       <FiTrash2 className="w-4 h-4 text-red-600" />
                     </div>
-                    <h2 className="text-lg font-semibold text-gray-900">Account Actions</h2>
+                    <h2 className="text-lg font-semibold text-gray-900">Danger Zone</h2>
                   </div>
                 </div>
                 <div className="space-y-4">
-                  <button 
-                    onClick={handleExportData}
-                    className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-                  >
-                    Export Account Data
-                  </button>
-                  <button 
-                    onClick={handleDeleteAccount}
-                    className="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
-                  >
-                    Delete Account
-                  </button>
+                  <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-900">Export Data</h3>
+                      <p className="text-sm text-gray-500">Download a copy of your data</p>
+                    </div>
+                    <button
+                      onClick={handleExportData}
+                      className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-700 bg-white rounded-lg shadow-sm hover:shadow-md transition-all"
+                    >
+                      Export
+                    </button>
+                  </div>
+                  <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg">
+                    <div>
+                      <h3 className="text-sm font-medium text-red-600">Delete Account</h3>
+                      <p className="text-sm text-red-500">Permanently delete your account and all data</p>
+                    </div>
+                    <button
+                      onClick={() => setIsDeleteAccountModalOpen(true)}
+                      className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1461,62 +1396,6 @@ export default function ProfileBody() {
             </div>
           </div>
         )}
-
-        {activeTab === 'archived' && (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-gray-50 rounded-full">
-                    <FiArchive className="w-5 h-5 text-gray-600" />
-                  </div>
-                  <h2 className="text-lg font-semibold text-gray-900">Archived Items</h2>
-                </div>
-              </div>
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="py-16 px-6"
-              >
-                <div className="max-w-sm mx-auto text-center">
-                  <motion.div 
-                    initial={{ scale: 0.8, y: 10 }}
-                    animate={{ scale: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.5,
-                      ease: "easeOut",
-                      delay: 0.1
-                    }}
-                    className="relative inline-block mb-6"
-                  >
-                    <div className="absolute inset-0 bg-gray-200 rounded-full animate-ping opacity-20"></div>
-                    <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-gray-50 to-gray-100">
-                      <FiArchive className="w-8 h-8 text-gray-500" />
-                    </div>
-                  </motion.div>
-                  
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ 
-                      duration: 0.4,
-                      ease: "easeOut",
-                      delay: 0.2
-                    }}
-                  >
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                      No archived items
-                    </h3>
-                    <p className="text-gray-500">
-                      Items you archive will be stored here for future reference
-                    </p>
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Modals */}
@@ -1533,10 +1412,26 @@ export default function ProfileBody() {
         initialData={profileInfo}
         onSave={handleSaveProfileInfo}
       />
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+        description={editedDescription}
+      />
       <CategoryModal
         isOpen={isCategoryModalOpen}
         onClose={() => setIsCategoryModalOpen(false)}
         categoryStats={categoryStats}
+      />
+      <SkillModal
+        isOpen={isSkillModalOpen}
+        onClose={() => setIsSkillModalOpen(false)}
+        skills={userSkills}
+        onUpdateSkills={handleUpdateSkills}
+      />
+      <DeleteAccountModal
+        isOpen={isDeleteAccountModalOpen}
+        onClose={() => setIsDeleteAccountModalOpen(false)}
+        onConfirmDelete={handleDeleteAccount}
       />
     </>
   )

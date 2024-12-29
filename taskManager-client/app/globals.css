@@ -57,6 +57,17 @@ body {
   }
 }
 
+@keyframes slide-in {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-out;
 }
@@ -68,6 +79,10 @@ body {
 .animate-draw {
   stroke-dasharray: 100;
   animation: draw 1s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out forwards;
 }
 
 .drag-mode {
@@ -86,12 +101,35 @@ body {
   pointer-events: none !important;
 }
 
-/* Custom Scrollbar */
+/* Custom Scrollbar Styles */
 .scrollbar-hide {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
 }
 
 .scrollbar-hide::-webkit-scrollbar {
-  display: none; /* Chrome, Safari and Opera */
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+.scrollbar-default {
+  -ms-overflow-style: auto;  /* IE and Edge */
+  scrollbar-width: thin;  /* Firefox */
+}
+
+.scrollbar-default::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-default::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-default::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+.scrollbar-default::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
 }
